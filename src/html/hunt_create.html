@@ -4,6 +4,79 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="../css/style.css">
   </head>
-  <body></body>
+  <body>
+    <div class="header-bg">
+        <a href="index.html"><img src="../img/return.png" class="header-img"></a>
+    </div>
+    <div class="bg-wrapper">
+    <div class="bg-dark">
+    </div>
+    <div class="bg-wrapper-2">
+    <div class="bg-light">
+
+    </div>
+    </div>
+    </div>
+    <div class="container">
+      <div class="bg-wrapper-header">
+      <div class="header">
+      </div>
+      </div>
+      <div class="content-top"><h1>Jagd erstellt</h1></div>
+        <div class="content">
+          <div class="session-box">
+            <div class="session-box-in">
+              <h4>SESSION-ID:<br><br></h4>
+              <h4 id="s-id">#1234</h4>
+              <img src="../img/copy.svg" onclick="copySessionID()">
+            </div>
+          </div>
+        <div class="table_users">
+          <div class="non-collapse">
+            <p>User 1</p>
+          </div>
+          <div class="non-collapse">
+            <p>User 2</p>
+          </div>
+          <div class="non-collapse">
+            <p>User 3</p>
+          </div>
+          <div class="non-collapse">
+            <p>User 4</p>
+          </div>
+          <div class="non-collapse">
+            <p>User 5</p>
+          </div>
+          <div class="non-collapse">
+            <p>User 6</p>
+          </div>
+          <div class="non-collapse">
+            <p>User 7</p>
+          </div>
+          <div class="non-collapse">
+            <p>User 8</p>
+          </div>
+        </div>
+        </div>
+        <div class="semi-footer">
+          <h5 style="color: #4f4e4e; margin-top: -10px;">
+            Teilnehmer Anzahl:<br>8/10
+          </h5>
+        </div>
+      <div class="footer"><a href="parcour_list.html"><button class="blue-btn">Weiter</button></a></div>
+    </div>
+    <script>
+      function copySessionID(){
+        var copyText = document.getElementById("s-id").innerText;
+
+        navigator.clipboard.writeText(copyText).then(() => {
+        alert("Session-ID kopiert! " + copyText);
+        }).catch(err => {
+          console.error("Kopieren fehlgeschlagen", err);
+        });
+      }
+    </script>
+  </body>
 </html>

@@ -8,10 +8,39 @@
   </head>
   <body>
     <div class="container">
-      <div class="header"><a href="login.html">Logout</a></div>
-      <div class="content-top">Parkoure</div>
+      <div class="header" style="background-color: red;">
+        <div>return delete</div>
+      </div>
+      <div class="content-top">
+        <h1>Bearbeiten</h1>
+          <div style="text-align: left; margin-left: 20px;">
+            <br>
+            <p>Parkour</p>
+            <p>Name:</p>
+            <input type="text" id="parkour-name">
+            <p>Ort:</p>
+            <input type="text" id="parkour-loc">
+            <p>Schwierigkeit:</p>
+              <div class="radio-btns">
+                <input type="radio" id="easy" name="difficulty" value="easy">
+                <label for="easy">Leicht</label>
+                <input type="radio" id="middle" name="difficulty" value="middle">
+                <label for="middle">Mittel</label>
+                <input type="radio" id="hard" name="difficulty" value="hard">
+                <label for="hard">Schwer</label>
+              </div>
+          </div>
+          <p class="divider"></p>
+      </div>
       <div class="content">
-        <div class="table_users">
+        <div class="table-header">
+          <p class="left">Tiere</p>
+          <p class="right">
+            Anzahl
+            <input type="number" class="animal-counter" name="counter" min="0" max="100">
+          </p>
+        </div>
+        <div class="table_users" style="background-color: white;">
           <div class="non-collapse">
             <p>01 Safari - Route<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
@@ -38,7 +67,12 @@
           </div>
         </div>
       </div>
-      <div class="footer"><a href="admin_parcour.html"><br><button class="blue-btn" style="float: right; margin-right: 15px;">Neu Anlegen</button></a></div>
+      <div class="semi-footer">
+        <button class="blue-btn" style="float: right; margin: 10px;">Speichern</button>
+      </div>
+      <div class="footer">
+        <h1  style="text-align:left;">Placeholder of an img</h1>
+      </div>
     </div>
   </body>
 </html>
