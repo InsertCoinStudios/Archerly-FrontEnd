@@ -21,51 +21,52 @@
     </div>
     <div class="container">
       <div class="bg-wrapper-header">
-      <div class="header">
+      <div class="header" style="margin-bottom: -10px;">
+        <h1>Jagd erstellen</h1>
       </div>
       </div>
-      <div class="content-top"><h1>Jagd erstellt</h1></div>
         <div class="content">
-          <div class="session-box">
-            <div class="session-box-in">
+          <div class="session-box_create">
+            <div class="session-box-in_create">
               <h4>SESSION-ID:<br><br></h4>
-              <h4 id="s-id">#1234</h4>
-              <img src="../img/copy.svg" onclick="copySessionID()">
+              <h4 id="s-id">#1234 <img src="../img/copy.svg" onclick="copySessionID()"></h4>
             </div>
           </div>
-        <div class="table_users">
-          <div class="non-collapse">
+        <div class="table_users_queue">
+          <div class="non-collapse-top_queue">
             <p>User 1</p>
           </div>
-          <div class="non-collapse">
+          <div class="non-collapse_queue">
             <p>User 2</p>
           </div>
-          <div class="non-collapse">
+          <div class="non-collapse_queue">
             <p>User 3</p>
           </div>
-          <div class="non-collapse">
+          <div class="non-collapse_queue">
             <p>User 4</p>
           </div>
-          <div class="non-collapse">
+          <div class="non-collapse_queue">
             <p>User 5</p>
           </div>
-          <div class="non-collapse">
+          <div class="non-collapse_queue">
             <p>User 6</p>
           </div>
-          <div class="non-collapse">
+          <div class="non-collapse_queue">
             <p>User 7</p>
           </div>
-          <div class="non-collapse">
+          <div class="non-collapse-bottom_queue">
             <p>User 8</p>
           </div>
         </div>
         </div>
-        <div class="semi-footer">
-          <h5 style="color: #4f4e4e; margin-top: -10px;">
-            Teilnehmer Anzahl:<br>8/10
-          </h5>
-        </div>
-      <div class="footer"><a href="parcour_list.html"><button class="blue-btn">Weiter</button></a></div>
+      <div class="footer">
+        <h5 style="color: #4f4e4e; margin-top: -10px;">
+          Teilnehmer Anzahl:<br>8/10
+        </h5>
+        <a href="parcour_list.html">
+          <button class="blue-btn">Weiter</button>
+        </a>
+      </div>
     </div>
     <script>
       function copySessionID(){
