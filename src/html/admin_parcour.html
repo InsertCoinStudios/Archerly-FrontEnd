@@ -7,19 +7,45 @@
     <link rel="stylesheet" href="../css/style.css">
   </head>
   <body>
+    <div class="header-bg">
+      <a href="admin_main.html"><img src="../img/return.png" class="header-img"></a>
+      <a href="admin_main.html"><img src="../img/trash.png" class="header-img-2"></a>
+    </div>
+    <div class="bg-wrapper">
+    <div class="bg-dark-admin">
+    </div>
+    <div class="bg-wrapper-2">
+    <div class="bg-light-admin">
+
+    </div>
+    </div>
+    </div>
     <div class="container">
-      <div class="header" style="background-color: red;">
-        <div>return delete</div>
+    <div class="bg-wrapper-header">
+  <div class="header-admin">
+    <h1>
+      Bearbeiten
+    </h1>
+      <form id="loginForm">
+
+      <div class="data-input-admin">
+      <label for="parcour-name" class="label-admin">Parkour:</label>
+      <input type="text" id ="parcour-name" name="parcour-name" placeholder="Safari - Route" class="textbox-admin">
       </div>
+
+      <div class="data-input-admin">
+      <label for="parcour-loc" class="label-admin">Ort:</label>
+      <input type="text" id="parcour-loc" name="parcour-loc" placeholder="Wüste 02" class="textbox-admin">
+      </div>
+
+  </form>
+  </div>
+  </div>
+
       <div class="content-top">
-        <h1>Bearbeiten</h1>
           <div style="text-align: left; margin-left: 20px;">
             <br>
-            <p>Parkour</p>
-            <p>Name:</p>
-            <input type="text" id="parkour-name">
-            <p>Ort:</p>
-            <input type="text" id="parkour-loc">
+
             <p>Schwierigkeit:</p>
               <div class="radio-btns">
                 <input type="radio" id="easy" name="difficulty" value="easy">
@@ -36,43 +62,57 @@
         <div class="table-header">
           <p class="left">Tiere</p>
           <p class="right">
-            Anzahl
+            <!-- DYNAMISCHER WERT:
+             LIEST DIE ANZAHL DER TIERE IN DER TABELLE AUS
+             ERLAUBT ES NICHT WENIGER, ALS DIE FIX GESETZTE ANZAHL ZU MANIPULIEREN (DAS TIER MUSS EXTRA PER KLICK GELÖSCHT WERDEN)
+             ERLAUBT ES TIERE HINZUZUFÜGEN, JEDOCH MUSS DER DATENSATZ FIX BEARBEITET WERDEN-->
+            Anzahl:
             <input type="number" class="animal-counter" name="counter" min="0" max="100">
           </p>
         </div>
-        <div class="table_users" style="background-color: white;">
-          <div class="non-collapse">
-            <p>01 Safari - Route<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+        <div class="table_users_admin-editor">
+          <!-- DYNAMISCHE ANPASSUNG: USERNAMEN, USERANZAHL -->
+          <div class="non-collapse-top-admin">
+            <p>Löwe<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
-          <div class="non-collapse">
-            <p>02 Wicked Forest - Route<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+          <div class="non-collapse-admin">
+            <p>Zebra<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
-          <div class="non-collapse">
-            <p>03 Wald Ost - Route<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+          <div class="non-collapse-admin">
+            <p>Gazelle<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
-          <div class="non-collapse">
-            <p>04 Wald West - Route<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+          <div class="non-collapse-admin">
+            <p>Giraffe<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
-            <div class="non-collapse">
-            <p>SCROLLTESTER<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+            <div class="non-collapse-admin">
+            <p>Gorilla<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
-          <div class="non-collapse">
-            <p>SCROLLTESTER<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+          <div class="non-collapse-admin">
+            <p>Braunbär<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
-          <div class="non-collapse">
-            <p>SCROLLTESTER<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+          <div class="non-collapse-admin">
+            <p>Geier<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
-          <div class="non-collapse">
-            <p>SCROLLTESTER<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+          <div class="non-collapse-bottom-admin">
+            <p>Elch<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
         </div>
-      </div>
-      <div class="semi-footer">
-        <button class="blue-btn" style="float: right; margin: 10px;">Speichern</button>
-      </div>
-      <div class="footer">
-        <h1  style="text-align:left;">Placeholder of an img</h1>
+        <button class="blue-btn-admin" style="float: right; margin: 10px;">Speichern</button>
       </div>
     </div>
+        <div class="target-circle" id="register_2-admin">
+          <span class="circle1">
+            <span class="circle2">
+              <span class="circle3">
+                <span class="circle4">
+                  <span class="circle5">
+                    <span class="circle6">
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </span>
+          </span>
+        </div>
   </body>
 </html>

@@ -10,7 +10,7 @@ body{
     text-align: center;
 }
 
-.header, .content-top, .content{
+.header, .content-top, .content, .header-admin{
   padding: 10px;
   overflow: hidden;
   position: relative;
@@ -32,6 +32,11 @@ body{
 .header{
   background-color: white;
   border-top-right-radius: 30px;
+}
+
+.header-admin{
+  background-color: white;
+  border-top-left-radius: 30px;
 }
 
 .table_users {
@@ -90,6 +95,46 @@ body{
 }
 
 .table_users_pc::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.table_users_admin {
+    display: grid;
+    grid-template-columns: auto;
+    background-color: white;
+    padding: 10px;
+
+    /* New properties for scrolling */
+    max-height: auto; /* adjust this height as needed */
+    overflow-y: auto;  /* vertical scroll if content exceeds max-height */
+}
+
+.table_users_admin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table_users_admin::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.table_users_admin-editor {
+    display: grid;
+    grid-template-columns: auto;
+    background-color: white;
+    padding: 10px;
+
+    /* New properties for scrolling */
+    max-height: 200px; /* adjust this height as needed */
+    overflow-y: auto;  /* vertical scroll if content exceeds max-height */
+}
+
+.table_users_admin-editor::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table_users_admin-editor::-webkit-scrollbar-thumb {
   background-color: #888;
   border-radius: 4px;
 }
@@ -180,6 +225,40 @@ body{
   font-size: 15px;
 }
 
+.non-collapse-admin{
+  background-color: #ffffff;
+  color: #000000;
+  padding: 10px;
+  width: auto;
+  text-align: left;
+  outline: 1px solid #444;
+  font-size: 15px;
+}
+
+.non-collapse-top-admin{
+  background-color: #ffffff;
+  color: #000000;
+  padding: 10px;
+  width: auto;
+  text-align: left;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  outline: 1px solid #444;
+  font-size: 15px;
+}
+
+.non-collapse-bottom-admin{
+  background-color: #ffffff;
+  color: #000000;
+  padding: 10px;
+  width: auto;
+  text-align: left;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  outline: 1px solid #444;
+  font-size: 15px;
+}
+
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 .active, .collapsible:hover {
   background-color: #ffffff;
@@ -254,8 +333,31 @@ body{
   margin: auto;
 }
 
+.blue-btn-admin{
+    position: relative;
+    top: 90%;
+    right: 5%;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background-color: #0cc0df;
+    box-shadow: 8px 8px #0e5864;
+    color: white;
+    border-radius: 10px;
+    border-color: #0cc0df;
+    height: 60px;
+    width: 50%;
+    font-size: 180%;
+    font-weight: bold;
+}
+
 .animal-counter{
-  width: auto;
+  width: fit-content;
+  height: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 10px;
 }
 
 .table-header {
@@ -274,7 +376,7 @@ body{
 
 .divider{
   border-top: 1px solid #8f8e8e;
-  margin: 20px 0;
+  margin: 20px 0 auto 0;
 }
 
 button {
@@ -313,6 +415,35 @@ button {
   padding-left: 10px;
 }
 
+.data-input-admin{
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.data-input-admin .label-admin{
+  color:#4d4c4c;
+  margin-bottom: 4px;
+  margin-top: 4px;
+  display: block;
+  text-align: left;
+  float: left;
+  margin: 0 auto 6px auto;
+  width: 75%;
+  font-size: 0.75rem;
+}
+
+.data-input-admin .textbox-admin{
+  border: none;
+  float: left;
+  background-color:#cacaca;
+  color: #4d4c4c;
+  border-radius: 10px;
+  height: 30px;
+  font-weight: bold;
+  width: 75%;
+  padding-left: 10px;
+}
+
 .login-title{
   margin-bottom: 4px;
 }
@@ -340,6 +471,13 @@ h1, h2, h3, h4, h5, h6 {
 .header-img{
   height: 40px;
   width: 40px;
+}
+
+.header-img-2{
+  height: 40px;
+  width: 40px;
+  text-align: center;
+  float: right;
 }
 
 .footer-img-left{
@@ -462,10 +600,22 @@ h1, h2, h3, h4, h5, h6 {
       border-top-right-radius: 10px;
 }
 
+.bg-dark-admin{
+      background: #5b1313;
+      padding: 6px;
+      border-top-left-radius: 10px;
+}
+
 .bg-light{
       background: #ffc5c5;
       padding: 6px;
       border-top-right-radius: 20px;
+}
+
+.bg-light-admin{
+      background: #ffc5c5;
+      padding: 6px;
+      border-top-left-radius: 20px;
 }
 
 .bg-wrapper-header{
@@ -509,6 +659,16 @@ h1, h2, h3, h4, h5, h6 {
 
 #register_2{
   position: fixed;
+  left: -60px;
+  bottom: -15%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+#register_2-admin{
+  position: fixed;
+  height: 140px;
   left: -60px;
   bottom: -15%;
   transform: translateY(-50%);
@@ -703,6 +863,16 @@ h1, h2, h3, h4, h5, h6 {
   height: 80px;
 }
 
+.header-hunt-join {
+  padding: 20px;
+  background-color: white;
+  border-top-right-radius: 30px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #hunt_join_outer_oval {
   width: 250px;
   height: 150px;
@@ -723,17 +893,6 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
 }
 
-.header-hunt-join {
-  padding: 20px;
-  background-color: white;
-  border-top-right-radius: 30px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
 #hunt_join_inner_oval {
   flex-shrink: 0;
   width: 350px;
@@ -746,6 +905,43 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
 
   text-shadow: 3px 3px #0e5864;
+  font-size: 180%;
+  font-weight: bold;
+  color: white;
+}
+
+#hunt_create_outer_oval {
+  width: 250px;
+  height: 150px;
+  background: #5b1313;
+  border-radius: 50px / 50px;
+
+  display: flex;
+  flex-direction: column;       /* stack text vertically */
+  align-items: center;          /* horizontal centering */
+  justify-content: center;      /* vertical centering */
+  gap: 10px;                    /* spacing between elements */
+
+  color: white;
+}
+
+#hunt_create_outer_oval p{
+  margin: 0;
+  font-weight: bold;
+}
+
+#hunt_create_inner_oval {
+  flex-shrink: 0;
+  width: 350px;
+  height: 75px;
+  background: #ff3131;
+  border-radius: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-shadow: 3px 3px #801616;
   font-size: 180%;
   font-weight: bold;
   color: white;
