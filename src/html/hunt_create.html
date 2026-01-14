@@ -8,7 +8,7 @@
   </head>
   <body>
     <div class="header-bg">
-        <a href="index.html"><img src="../img/return.png" class="header-img"></a>
+          <img src="../img/return.png" class="header-img" id="returnBtn">
     </div>
     <div class="bg-wrapper">
     <div class="bg-dark">
@@ -81,5 +81,40 @@
         });
       }
     </script>
+<div id="leaveOverlay">
+  <div id="leaveModal">
+    <h3><strong>Möchtest du diese<br>Jagd auflösen?</strong></h3>
+
+    <div class="leave-actions">
+      <button id="leaveYes">Ja</button>
+      <button id="leaveNo">Nein</button>
+    </div>
+  </div>
+</div>
+<script>
+  const returnBtn = document.getElementById("returnBtn");
+  const overlay = document.getElementById("leaveOverlay");
+  const yesBtn = document.getElementById("leaveYes");
+  const noBtn = document.getElementById("leaveNo");
+
+  returnBtn.addEventListener("click", () => {
+    overlay.style.display = "flex";
+  });
+
+  yesBtn.addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
+
+  noBtn.addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+
+  overlay.addEventListener("click", (e) => {
+  if (e.target === overlay) {
+    overlay.style.display = "none";
+  }
+});
+
+</script>
   </body>
 </html>

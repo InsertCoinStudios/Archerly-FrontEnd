@@ -7,6 +7,23 @@
     <link rel="stylesheet" href="../css/style.css">
   </head>
   <body>
+    <div class="header-bg">
+      <img src="../img/return.png" class="header-img" id="returnBtn">
+    </div>
+    <div class="bg-wrapper">
+    <div class="bg-dark">
+    </div>
+    <div class="bg-wrapper-2">
+    <div class="bg-light">
+
+    </div>
+    </div>
+    </div>
+<div class="container">
+      <div class="bg-wrapper-header">
+<div class="header">
+</div>
+      </div>
     <h4>Impressum</h4><p><b>Informationen und Offenlegung gemäß &sect;5 (1) ECG, &sect; 25 MedienG, &sect; 63 GewO und &sect; 14 UGB</b></p> <p><b>Webseitenbetreiber:</b> Mike Oxlong</p>
 <p><b>Anschrift:</b> Fickeysstraße 15, 1110 Wien</p>
 <p><b>UID-Nr:</b>  <br> <b>Gewerbeaufsichtbehörde:</b>  <br> <b>Mitgliedschaften:</b></p>
@@ -15,9 +32,18 @@
 <p><b>Anwendbare Rechtsvorschrift:</b> www.ris.bka.gv.at <br> <b>Berufsbezeichnung:</b> </p>
 <p><b>Online Streitbeilegung:</b> Verbraucher, welche in Österreich oder in einem sonstigen Vertragsstaat der ODR-VO niedergelassen sind, haben die Möglichkeit Probleme bezüglich dem entgeltlichen Kauf von Waren oder Dienstleistungen im Rahmen einer Online-Streitbeilegung (nach OS, AStG) zu lösen. Die Europäische Kommission stellt eine Plattform hierfür bereit: https://ec.europa.eu/consumers/odr</p>
 <p><b>Urheberrecht:</b> Die Inhalte dieser Webseite unterliegen, soweit dies rechtlich möglich ist, diversen Schutzrechten (z.B dem Urheberrecht). Jegliche Verwendung/Verbreitung von bereitgestelltem Material, welche urheberrechtlich untersagt ist, bedarf schriftlicher Zustimmung des Webseitenbetreibers.</p><p><b>Haftungsausschluss:</b> Trotz sorgfältiger inhaltlicher Kontrolle übernimmt der Webseitenbetreiber dieser Webseite keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich. Sollten Sie dennoch auf ausgehende Links aufmerksam werden, welche auf eine Webseite mit rechtswidriger Tätigkeit/Information verweisen, ersuchen wir um dementsprechenden Hinweis, um diese nach § 17 Abs. 2 ECG umgehend zu entfernen.<br>Die Urheberrechte Dritter werden vom Betreiber dieser Webseite mit größter Sorgfalt beachtet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden derartiger Rechtsverletzungen werden wir den betroffenen Inhalt umgehend entfernen.</p>
-<a href="index.html">
-  <button class="red-btn">Zurück</button>
-  <!-- FUNKTION EINBAUEN, WAS DIE ZULETZT GEÖFFNETE HTML WIEDERRUFT (INDEX, LOGIN, REGISTER ODER HUNT_FINISH)-->
-</a>
+</div>
+
+<script>
+  document.getElementById("returnBtn").addEventListener("click", () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      // Fallback, falls Seite direkt geöffnet wurde
+      window.location.href = "index.html";
+    }
+  });
+</script>
+
 </body>
 </html>
