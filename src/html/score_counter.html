@@ -41,14 +41,17 @@
           <div class="points-box">&Chi; MISS &Chi;</div>
       </div>
       <div class="footer">
-        <div class="score_counter-footer">
-        <h3>Punkte: 20<br>
-        Tier: 1 von 24<br></h3>
+        <div class="score_counter-footer" style="margin-top: -10px;">
+        <h4>Punkte: 20<br>
+        Tier: 1 von 24<br></h4>
         </div>
       </div>
     </div>
 </div>
 <script>
+console.group("RATING MODE DEBUG");
+console.log("localStorage.ratingMode =", localStorage.getItem("ratingMode"));
+console.groupEnd();
 
 /* =========================
    1. KONFIGURATION
@@ -115,23 +118,35 @@ function renderPoints() {
 
 function updateFooter() {
   footer.innerHTML = `
-    <h3>
+    <h4>
       Punkte: ${totalScore}<br>
       Tier: ${currentAnimal} von ${TOTAL_ANIMALS}<br>
-      Schuss: ${currentShot + 1}
-    </h3>
+      ${currentShot + 1}. Schuss
+    </h4>
   `;
 }
 
 function nextAnimal() {
+  if (currentAnimal >= TOTAL_ANIMALS) {
+    console.log("FERTIG", results, "Gesamt:", totalScore);
+
+    // optional: Ergebnisse für später speichern
+    localStorage.setItem("huntResults", JSON.stringify(results));
+    localStorage.setItem("totalScore", totalScore);
+
+    // kleine Verzögerung für UX
+    setTimeout(() => {
+      window.location.href = "hunt_finish.html";
+    }, 300);
+
+    return;
+  }
+
   currentAnimal++;
   currentShot = 0;
-
-  if (currentAnimal > TOTAL_ANIMALS) {
-    console.log("FERTIG", results, "Gesamt:", totalScore);
-    // später: Weiterleitung / Backend
-  }
 }
+
+let shotLocked = false; // NEU: verhindert Mehrfachklicks pro Schuss
 
 
 /* =========================
@@ -140,8 +155,14 @@ function nextAnimal() {
 
 pointBoxes.forEach(box => {
   box.addEventListener("click", () => {
+
+    // 🔒 Wenn Schuss schon gemacht, nix tun
+    if (shotLocked) return;
+    shotLocked = true;
+
     const value = box.dataset.value;
 
+    // Ergebnis-Objekt für aktuelles Tier vorbereiten
     if (!results[currentAnimal - 1]) {
       results[currentAnimal - 1] = {
         animal: currentAnimal,
@@ -157,24 +178,36 @@ pointBoxes.forEach(box => {
 
     currentShot++;
 
-    // ZWEIPFEIL
+    // =========================
+    // ZWEIPFEIL-BEWERTUNG
+    // =========================
     if (ratingMode === "two") {
       if (currentShot === config.shotsPerAnimal) {
         nextAnimal();
       }
     }
 
-    // DREIPFEIL
+    // =========================
+    // DREIPFEIL-BEWERTUNG
+    // =========================
     if (ratingMode === "three") {
       if (value !== "MISS" || currentShot === config.shotsPerAnimal) {
         nextAnimal();
       }
     }
 
+    // UI aktualisieren
     renderPoints();
     updateFooter();
+
+    // 🔓 Reset für nächsten Schuss (nach kurzem Delay für UX)
+    setTimeout(() => {
+      shotLocked = false;
+    }, 50);
+
   });
 });
+
 
 
 /* =========================

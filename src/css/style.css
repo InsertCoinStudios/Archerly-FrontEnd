@@ -1173,6 +1173,43 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto;
 }
 
+.silhouette-box-admin{
+  background-color: #ff3131;
+  box-shadow: 6px 6px #5b1313;
+  color: white;
+  border-radius: 10px;
+  border-color: #ff3131;
+  height: 130px;
+  width: 100%;
+  font-size: 150%;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.silhouettes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 Boxen pro Reihe */
+  gap: 16px; /* Abstand zwischen Boxen */
+  max-height: 420px; /* Höhe des scrollbaren Bereichs */
+  overflow-y: auto;   /* vertikal scrollen, wenn Inhalt größer ist */
+  padding: 10px;
+}
+
+.silhouettes-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.silhouettes-grid::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+
+
 .points-box{
     background-color: #0cc0df;
     box-shadow: 10px 10px #0e5864;

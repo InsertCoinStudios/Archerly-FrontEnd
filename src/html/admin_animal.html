@@ -41,7 +41,7 @@
 
       </div>
       <div class="content">
-
+        <div class="silhouettes-grid"></div>
         
 
         <button class="blue-btn-admin" style="float: right; margin: 10px;">Speichern</button>
@@ -98,5 +98,17 @@
 });
 
 </script>
+<script>
+  const grid = document.querySelector(".silhouettes-grid");
+  const totalBoxes = 12; // Anzahl der Boxen
+
+  for (let i = 1; i <= totalBoxes; i++) {
+    const box = document.createElement("div");
+    box.classList.add("silhouette-box-admin");
+    box.textContent = `Tier ${i}`;
+    grid.appendChild(box);
+  }
+</script>
+
   </body>
 </html>
