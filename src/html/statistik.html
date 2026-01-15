@@ -26,26 +26,25 @@
       </div>
       <div class="content-top">
 <div id="rectangle">
-  <div class="rectangle-user winner">
-    <h3 class="user-name">User</h3>
+  <div class="rectangle-user">
+    <h4 class="user-name">Gesamtanzahl Schüsse</h4>
     <h3 class="user-score">Score</h3>
   </div>
 
   <div class="rectangle-user">
-    <h3 class="user-name">User</h3>
+    <h3 class="user-name">Verfehlte Schüsse</h3>
     <h3 class="user-score">Score</h3>
   </div>
 
   <div class="rectangle-user">
-    <h3 class="user-name">User</h3>
+    <h3 class="user-name">Highscore</h3>
     <h3 class="user-score">Score</h3>
   </div>
 </div>
       </div>
-      <div class="content">
-<h4>Chart</h4>
-<canvas id="userStatsChart" width="400" height="400"></canvas>
-
+      <div class="content-total-stats">
+  <div id="performanceChart" 
+     style="width: 100%; max-width: 400px; height: 500px; margin: 0 auto; position: relative; top: -110px;"></div>
       </div>
       <div class="semi-footer">
 
@@ -66,10 +65,48 @@
         <a href="impressum.html" class="impressum">Impressum</a>
       </div>
     </div>
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <!-- eigenes JS -->
 <script src="../js/statistik.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js"></script>
+<script>
+  // 1. Chart-Container holen
+  var chartDom = document.getElementById('performanceChart');
+  var myChart = echarts.init(chartDom);
 
+  // 2. Optionen für den Pie-Chart festlegen
+var option = {
+  tooltip: { show: false },
+  color: ['#f399ac', '#ed2633', '#ef5a66'],
+  series: [
+    {
+      type: 'pie',
+      radius: '60%',
+      label: {
+        show: true,
+        position: 'inside'
+      },      // Kein Text innerhalb des Charts
+      labelLine: { show: false },  // Keine Pointer-Linien
+      data: [
+        { value: 40, name: '40' },
+        { value: 30 ,name: '30'},
+        { value: 20, name: '20' }
+      ],
+      emphasis: {
+        itemStyle: { shadowBlur: 0, shadowOffsetX: 0, shadowColor: 'transparent' }
+      }
+    }
+  ]
+};
+
+
+  // 3. Optionen dem Chart zuweisen
+  myChart.setOption(option);
+
+  window.addEventListener('resize', function() {
+  myChart.resize();
+});
+
+</script>
   </body>
 </html>

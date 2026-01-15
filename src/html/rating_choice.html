@@ -26,9 +26,9 @@
       </div>
       </div>
       <div class="content">
-        <a href="score_counter.html"><button class="create-btn">Zweipfeil</button></a><br>
+        <button class="create-btn" id="twoBtn">Zweipfeil</button><br>
 
-        <a href="score_counter.html"><button class="join-btn">Dreipfeil</button></a>
+        <button class="join-btn" id="threeBtn">Dreipfeil</button>
       </div>
       <div class="footer">
         <img src="../img/arrow.png" id="arrow_img_1">
@@ -49,5 +49,57 @@
         </div>
       </div>
     </div>
+<div id="leaveOverlay">
+  <div id="leaveModal">
+    <h3><strong>Jagd beginnen?</strong></h3>
+    <h6>
+      PARCOUR: PARCOUR_NAME<br>
+      BEWERTUNG: ZWEIPFEIL/DREIPFEIL
+    </h6>
+    <div class="leave-actions">
+      <button id="leaveYes">Ja</button>
+      <button id="leaveNo">Nein</button>
+    </div>
+  </div>
+</div>
+<script>
+const twoBtn = document.getElementById("twoBtn");
+const threeBtn = document.getElementById("threeBtn");
+const overlay = document.getElementById("leaveOverlay");
+const yesBtn = document.getElementById("leaveYes");
+const noBtn = document.getElementById("leaveNo");
+
+let selectedMode = null;
+
+twoBtn.addEventListener("click", () => {
+  selectedMode = "two";
+  overlay.style.display = "flex";
+});
+
+threeBtn.addEventListener("click", () => {
+  selectedMode = "three";
+  overlay.style.display = "flex";
+});
+
+yesBtn.addEventListener("click", () => {
+  if (!selectedMode) return;
+
+  localStorage.setItem("ratingMode", selectedMode);
+  window.location.href = "score_counter.html";
+});
+
+noBtn.addEventListener("click", () => {
+  overlay.style.display = "none";
+  selectedMode = null;
+});
+
+overlay.addEventListener("click", (e) => {
+  if (e.target === overlay) {
+    overlay.style.display = "none";
+    selectedMode = null;
+  }
+});
+</script>
+
   </body>
 </html>

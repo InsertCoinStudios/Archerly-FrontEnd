@@ -3,40 +3,43 @@ body{
   background-color: white;
   margin: 0;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* komplette Höhe des Viewports */
 }
 
 .container{
-    font-weight: bold;
-    text-align: center;
+  font-weight: bold;
+  text-align: center;
 }
 
 .header, .content-top, .content, .header-admin{
-  padding: 10px;
+  padding: 0;
+  margin: 0;
   overflow: hidden;
   position: relative;
 }
 
-.content-hunt-finish{
-  padding-left: 10px;
-  margin-bottom: -160px;
-  overflow: hidden;
-  position: relative;
-}
-
-.content-total-stats{
-  padding-left: 10px;
-  margin-bottom: -180px;
-  overflow: hidden;
-  position: relative;
+.content{
+  flex: 1;             /* füllt den Platz zwischen Header und Footer */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* vertikal zentrieren */
+  align-items: center;      /* horizontal zentrieren */
+  margin: 0;
+  padding: 0;
 }
 
 .footer{
   padding: 10px;
+  padding-top: 0;
   overflow: hidden;
   position: relative;
 }
 
 .semi-footer{
+  padding-top: 0;
+  margin-top: 0;
   padding: 10px;
   overflow: hidden;
   position: relative;
@@ -134,18 +137,7 @@ body{
 }
 
 .table_users_admin-editor {
-  /* OLD
     display: grid;
-    grid-template-columns: auto;
-    background-color: white;
-    padding: 10px;
-
-    max-height: 200px;
-    overflow-y: auto;  
-  */
-
-    display: flex;
-    flex-direction: column;
     grid-template-columns: auto;
     background-color: white;
     padding: 10px;
@@ -352,7 +344,6 @@ body{
   height: 30px;
   width: 30px;
   float: right;
-  flex-shrink: 0;
 }
 
 .radio-btns{
@@ -1255,25 +1246,4 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 2rem;
   text-align: center;
   z-index: 1;
-}
-
-.sortable-ghost {
-  opacity: 0.5;      /* halbtransparent beim Ziehen */
-  background-color: #ffe6e6; /* optional andere Farbe */
-}
-
-.drag-handle {
-  cursor: grab;           /* Maus zeigt, dass es ziehbar ist */
-  margin-right: 10px;     /* Abstand zum Text */
-  font-size: 18px;        /* Größe des Symbols */
-  display: inline-block;
-  touch-action: none;
-  user-select: none;      /* verhindert Textauswahl beim Ziehen */
-}
-.drag-handle:active {
-  cursor: grabbing;
-}
-
-.animal-text{
-  flex: 1;
 }

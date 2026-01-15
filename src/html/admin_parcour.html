@@ -67,37 +67,53 @@
              ERLAUBT ES NICHT WENIGER, ALS DIE FIX GESETZTE ANZAHL ZU MANIPULIEREN (DAS TIER MUSS EXTRA PER KLICK GELÖSCHT WERDEN)
              ERLAUBT ES TIERE HINZUZUFÜGEN, JEDOCH MUSS DER DATENSATZ FIX BEARBEITET WERDEN-->
             Anzahl:
-            <input type="number" class="animal-counter" name="counter" min="0" max="100">
+            <input type="number" class="animal-counter" name="counter" min="1" max="100">
           </p>
         </div>
         <div class="table_users_admin-editor">
           <!-- DYNAMISCHE ANPASSUNG: USERNAMEN, USERANZAHL -->
           <div class="non-collapse-top-admin">
-            <p>Löwe<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+            <span class="drag-handle">&#x2630;</span>
+            <span class="animal-text">Löwe</span>
+            <a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
-            <p>Zebra<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+            <span class="drag-handle">&#x2630;</span>
+            <span class="animal-text">Zebra</span>
+            <a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
-            <p>Gazelle<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+            <span class="drag-handle">&#x2630;</span>
+            <span class="animal-text">Gazelle</span>
+            <a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
-            <p>Giraffe<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+            <span class="drag-handle">&#x2630;</span>
+            <span class="animal-text">Giraffe</span>
+            <a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
             <div class="non-collapse-admin">
-            <p>Gorilla<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+            <span class="drag-handle">&#x2630;</span>
+            <span class="animal-text">Gorilla</span>
+            <a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
-            <p>Braunbär<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+            <span class="drag-handle">&#x2630;</span>
+            <span class="animal-text">Braunbär</span>
+            <a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
-            <p>Geier<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+            <span class="drag-handle">&#x2630;</span>
+            <span class="animal-text">Geier</span>
+            <a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-bottom-admin">
-            <p>Elch<a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
+            <span class="drag-handle">&#x2630;</span>
+            <span class="animal-text">Elch</span>
+            <a href="admin_animal.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
         </div>
-        <button class="blue-btn-admin" style="float: right; margin: 10px;">Speichern</button>
+        <a href="admin_main.html"><button class="blue-btn-admin" style="float: right; margin: 10px;">Speichern</button></a>
       </div>
     </div>
         <div class="target-circle" id="register_2-admin">
@@ -149,5 +165,116 @@
 });
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+  // =========================
+  // BASIS-ELEMENTE
+  // =========================
+  const animalList = document.querySelector('.table_users_admin-editor');
+  const animalCounter = document.querySelector('.animal-counter');
+  const saveBtn = document.querySelector('.blue-btn-admin');
+
+  // =========================
+  // SORTABLE.JS
+  // =========================
+  const sortable = Sortable.create(animalList, {
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    handle: '.drag-handle',
+    forceFallback: true,
+    onEnd: refreshRowClasses
+  });
+
+  // =========================
+  // KLASSEN KORREKT SETZEN
+  // =========================
+  function refreshRowClasses() {
+    const rows = animalList.children;
+
+    Array.from(rows).forEach(row => {
+      row.classList.remove(
+        'non-collapse-top-admin',
+        'non-collapse-bottom-admin',
+        'non-collapse-admin'
+      );
+      row.classList.add('non-collapse-admin');
+    });
+
+    if (rows.length > 0) {
+      rows[0].classList.replace('non-collapse-admin', 'non-collapse-top-admin');
+      rows[rows.length - 1].classList.replace('non-collapse-admin', 'non-collapse-bottom-admin');
+    }
+  }
+
+  // =========================
+  // REIHENFOLGE AUSLESEN
+  // =========================
+  function getAnimalOrder() {
+    return Array.from(
+      animalList.querySelectorAll('.animal-text')
+    ).map(el => el.innerText.trim());
+  }
+
+  saveBtn.addEventListener('click', () => {
+    console.log('Neue Reihenfolge:', getAnimalOrder());
+  });
+
+  // =========================
+  // COUNTER + ADD-LOGIC
+  // =========================
+
+  let minAnimals = animalList.children.length;
+  let currentAnimals = minAnimals;
+
+  // Initial Counter setzen
+  animalCounter.value = minAnimals;
+  animalCounter.min = minAnimals;
+
+  // Neue Tier-Zeile
+  function createAnimalRow(name = 'Tier') {
+    const div = document.createElement('div');
+    div.className = 'non-collapse-admin';
+    div.innerHTML = `
+      <span class="drag-handle">&#x2630;</span>
+      <span class="animal-text">${name}</span>
+      <a href="admin_animal.html">
+        <img class="edit_png" src="../img/edit_square.png" alt="edit">
+      </a>
+    `;
+    return div;
+  }
+
+  // Counter-Änderung
+  animalCounter.addEventListener('input', () => {
+    const target = parseInt(animalCounter.value, 10);
+
+    // ❌ Reduzieren verboten
+    if (target < minAnimals) {
+      animalCounter.value = currentAnimals;
+      return;
+    }
+
+    // ➕ Tiere hinzufügen
+    if (target > currentAnimals) {
+      const toAdd = target - currentAnimals;
+
+      for (let i = 0; i < toAdd; i++) {
+        animalList.appendChild(createAnimalRow());
+      }
+
+    currentAnimals = animalList.children.length;
+    minAnimals = currentAnimals;      // ⭐ WICHTIG
+    animalCounter.min = minAnimals;   // ⭐ UI absichern
+    animalCounter.value = currentAnimals;
+
+    refreshRowClasses();
+
+    }
+  });
+
+  // Initial korrekt setzen
+  refreshRowClasses();
+</script>
+
   </body>
 </html>

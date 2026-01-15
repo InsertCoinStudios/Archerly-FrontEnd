@@ -22,9 +22,9 @@
       <div class="bg-wrapper-header">
         <div class="header-hunt-join">
           <div id="hunt_create_outer_oval">
-            <p>Das war eine</p>
+            <h3>Das war eine</h3>
             <div id="hunt_create_inner_oval">Gute Jagd!</div>
-            <p>Hier das Ergebnis</p>
+            <h3>Hier das Ergebnis</h3>
           </div>
         </div>
       </div>
@@ -47,11 +47,47 @@
     <h3 class="user-name">User</h3>
     <h3 class="user-score">Score</h3>
   </div>
+
+  <div class="rectangle-user">
+    <h3 class="user-name">User</h3>
+    <h3 class="user-score">Score</h3>
+  </div>
 </div>
 
-        <div class="content">
-          <div><h2>Deine Performance<br>diese Jagd:</h2></div>
-        </div>
+<div class="content-hunt-finish">
+  <h2 style="margin-top: 10px; text-align:center; font-size: 24px; text-shadow: 2px 2px #707070;">Deine Performance<br>diese Jagd:</h2>
+  
+  <!-- Horizontal legend / Punkte -->
+<div style="display:flex; justify-content:center; gap:20px; margin: 10px 0;">
+  
+  <!-- Gesamtanzahl Schüsse -->
+  <div style="display:flex; align-items:center;">
+    <div style="width:15px; height:15px; background-color:#f399ac; border-radius:0;"></div>
+    <h6 style="margin:0;">Gesamtanzahl Schüsse</h6>
+  </div>
+
+  <!-- Volltreffer -->
+  <div style="display:flex; align-items:center; gap:5px;">
+    <div style="width:15px; height:15px; background-color:#ed2633; border-radius:0;"></div>
+    <h6 style="margin:0;">Volltreffer</h6>
+  </div>
+
+  <!-- Verfehlte Schüsse -->
+  <div style="display:flex; align-items:center;">
+    <div style="width:15px; height:15px; background-color:#ef5a66; border-radius:0;"></div>
+    <h6 style="margin:0;">Verfehlte Schüsse</h6>
+  </div>
+
+</div>
+
+
+  <!-- Pie-Chart Container -->
+  <div id="performanceChart" 
+     style="width: 100%; max-width: 400px; height: 300px; margin: 0 auto; position: relative; top: -50px;"></div>
+
+
+</div>
+
 
       <div class="semi-footer">
 
@@ -71,5 +107,55 @@
       <div class="footer">
         <a href="impressum.html" class="impressum">Impressum</a>
       </div>
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js"></script>
+
+<script>
+  // 1. Chart-Container holen
+  var chartDom = document.getElementById('performanceChart');
+  var myChart = echarts.init(chartDom, null, {
+    renderer: 'canvas',
+    width: chartDom.clientWidth,
+    height: chartDom.clientHeight
+  });
+
+  // 2. Optionen für den Pie-Chart festlegen
+var option = {
+  tooltip: { show: false },
+  color: ['#f399ac', '#ed2633', '#ef5a66'],
+  series: [
+    {
+      type: 'pie',
+      radius: '60%',
+      center: ['50%', '50%'], // zentriert
+      avoidLabelOverlap: false, // Labels nicht verschieben
+      label: {
+        show: true,
+        position: 'inside'
+      },
+      labelLine: { show: false },
+      data: [
+        { value: 40, name: '40' },
+        { value: 30, name: '30' },
+        { value: 20, name: '20' }
+      ],
+      emphasis: {
+        itemStyle: { shadowBlur:0, shadowOffsetX:0, shadowColor:'transparent' }
+      }
+    }
+  ]
+};
+
+
+
+  // 3. Optionen dem Chart zuweisen
+  myChart.setOption(option);
+
+  window.addEventListener('resize', function() {
+  myChart.resize();
+});
+
+</script>
+
+
   </body>
 </html>

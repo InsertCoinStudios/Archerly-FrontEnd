@@ -7,8 +7,18 @@
     <link rel="stylesheet" href="../css/style.css">
   </head>
   <body>
-    <div class="header-bg">
+<div class="page-score">
+    <div class="header-bg-score">
+      <h1 id="score_counter-parcour-name">Safari - Route</h1>
+
+      <div class="score-container">
+        <span class="reg-score-text">Platz</span>
+        <span class="current-score">9</span>
+        <span class="reg-score-text">/12</span>
+      </div>
+              <span class="semi-circle"></span>
     </div>
+
     <div class="bg-wrapper">
     <div class="bg-dark">
     </div>
@@ -20,23 +30,162 @@
     </div>
     <div class="container">
       <div class="bg-wrapper-header">
-      <div class="header">Safari - Route</div>
+      <div class="header">
+        <div class="silhouette-box"><a href="hunt_finish.html">img</a></div>
       </div>
-      <div class="content-top">Platz 9/12</div>
+      </div>
       <div class="content">
-        <div class="table_users">
-        <div class="red-btn">img</div>
-          <div class="blue-btn">20</div>
-          <div class="blue-btn">18</div>
-          <div class="blue-btn">16</div>
-          <div class="blue-btn">&Chi; MISS &Chi;</div>
-        </div>
+          <div class="points-box">20</div>
+          <div class="points-box">18</div>
+          <div class="points-box">16</div>
+          <div class="points-box">&Chi; MISS &Chi;</div>
       </div>
       <div class="footer">
-        Punkte: 20<br>
-        Tier: 1 von 24<br>
-        <a href="hunt_finish.html">weiter</a>
+        <div class="score_counter-footer">
+        <h3>Punkte: 20<br>
+        Tier: 1 von 24<br></h3>
+        </div>
       </div>
     </div>
+</div>
+<script>
+
+/* =========================
+   1. KONFIGURATION
+========================= */
+
+const TOTAL_ANIMALS = 24;
+
+// Bewertung aus rating_choice.html
+// localStorage.setItem("ratingMode", "two" | "three")
+const ratingMode = localStorage.getItem("ratingMode") || "two";
+
+const RATING_CONFIG = {
+  two: {
+    shotsPerAnimal: 2,
+    pointsPerShot: [
+      [20, 18, 16, "MISS"],
+      [20, 18, 16, "MISS"]
+    ]
+  },
+  three: {
+    shotsPerAnimal: 3,
+    pointsPerShot: [
+      [20, 18, 16, "MISS"],
+      [16, 14, 12, "MISS"],
+      [10, 8, 6, "MISS"]
+    ]
+  }
+};
+
+const config = RATING_CONFIG[ratingMode];
+
+
+/* =========================
+   2. STATE
+========================= */
+
+let currentAnimal = 1;
+let currentShot = 0;
+let totalScore = 0;
+
+let results = []; // später fürs Backend
+
+
+/* =========================
+   3. DOM REFERENZEN
+========================= */
+
+const pointBoxes = document.querySelectorAll(".points-box");
+const footer = document.querySelector(".score_counter-footer");
+
+
+/* =========================
+   4. UI FUNKTIONEN
+========================= */
+
+function renderPoints() {
+  const points = config.pointsPerShot[currentShot];
+
+  pointBoxes.forEach((box, index) => {
+    box.textContent = points[index];
+    box.dataset.value = points[index];
+  });
+}
+
+function updateFooter() {
+  footer.innerHTML = `
+    <h3>
+      Punkte: ${totalScore}<br>
+      Tier: ${currentAnimal} von ${TOTAL_ANIMALS}<br>
+      Schuss: ${currentShot + 1}
+    </h3>
+  `;
+}
+
+function nextAnimal() {
+  currentAnimal++;
+  currentShot = 0;
+
+  if (currentAnimal > TOTAL_ANIMALS) {
+    console.log("FERTIG", results, "Gesamt:", totalScore);
+    // später: Weiterleitung / Backend
+  }
+}
+
+
+/* =========================
+   5. KLICK-LOGIK
+========================= */
+
+pointBoxes.forEach(box => {
+  box.addEventListener("click", () => {
+    const value = box.dataset.value;
+
+    if (!results[currentAnimal - 1]) {
+      results[currentAnimal - 1] = {
+        animal: currentAnimal,
+        shots: []
+      };
+    }
+
+    results[currentAnimal - 1].shots.push(value);
+
+    if (value !== "MISS") {
+      totalScore += Number(value);
+    }
+
+    currentShot++;
+
+    // ZWEIPFEIL
+    if (ratingMode === "two") {
+      if (currentShot === config.shotsPerAnimal) {
+        nextAnimal();
+      }
+    }
+
+    // DREIPFEIL
+    if (ratingMode === "three") {
+      if (value !== "MISS" || currentShot === config.shotsPerAnimal) {
+        nextAnimal();
+      }
+    }
+
+    renderPoints();
+    updateFooter();
+  });
+});
+
+
+/* =========================
+   6. INITIALISIERUNG
+========================= */
+
+renderPoints();
+updateFooter();
+
+</script>
+
+
   </body>
 </html>
