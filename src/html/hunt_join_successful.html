@@ -31,12 +31,12 @@
       </div>
         <div class="session-box" style="margin-top: auto;">
           <div class="session-box-in">
-            <h5>SESSION-ID:<br><br>#1234</h5>
+            <h5 id="sessionIdDisplay">SESSION-ID:<br><br>#XXXX</h5>
             <!-- DYNAMISCHER WERT NICHT HARD GECODED WIE HIER -->
           </div>
         </div>
         <div class="content">
-        <div class="table_users_queue">
+        <div class="table_users_queue" id="usersQueue">
           <!-- DYNAMISCHE ANPASSUNG: USERNAMEN, USERANZAHL -->
           <div class="non-collapse-top_queue">
             <p>User 1</p>
@@ -67,7 +67,7 @@
       <div class="footer">
       <!-- DYNAMISCHE TEILNEHMER ANZAHL MAX. 10-->
         <h5 style="color: #4f4e4e; margin-top: -10px;">
-          Teilnehmer Anzahl:<br>8/10
+          Teilnehmer Anzahl:<br>8
         </h5>
         <!-- Sobald "Ersteller" fertig erstellt hat, dann zum Scoreboard rüber-->
         <a href="hunt_join_successful.html">
@@ -110,5 +110,65 @@
 });
 
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const sessionIdDisplay = document.getElementById("sessionIdDisplay");
+  const usersQueue = document.getElementById("usersQueue");
+
+  try {
+    // JWT-Token aus LocalStorage
+    const token = localStorage.getItem("authToken");
+    if (!token) throw new Error("Nicht eingeloggt");
+
+    // Session-ID, die der User eingegeben hat oder aus URL
+    const sessionId = localStorage.getItem("joinedSessionId"); // z.B. beim "Beitreten" speichern
+
+    if (!sessionId) throw new Error("Keine Session-ID vorhanden");
+
+    // === Session-Daten vom Backend abrufen ===
+    const response = await fetch(`https://dein-backend-url/api/session/${sessionId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) throw new Error("Fehler beim Laden der Session");
+
+    const data = await response.json();
+    // Beispiel Rückgabe:
+    // data = { sessionId: "1234", creator: {username: "CreatorUser"}, participants: [{username: "User1"}, ...] }
+
+    // === Session-ID anzeigen ===
+    sessionIdDisplay.innerHTML = `SESSION-ID:<br><br>#${data.sessionId}`;
+
+    // === Teilnehmer anzeigen ===
+    usersQueue.innerHTML = ""; // leeren
+    data.participants.forEach((user, idx) => {
+      const row = document.createElement("div");
+      row.className = "non-collapse-queue";
+
+      // Erster Eintrag = top, letzter Eintrag = bottom
+      if (idx === 0) row.className = "non-collapse-top_queue";
+      if (idx === data.participants.length - 1) row.className = "non-collapse-bottom_queue";
+
+      row.innerHTML = `<p>${user.username}</p>`;
+
+      // Wenn der User der Creator ist → Highlight
+      if (user.username === data.creator.username) {
+        row.style.backgroundColor = "#fbd279";
+      }
+
+      usersQueue.appendChild(row);
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("Fehler beim Laden der Session. Bitte erneut versuchen.");
+  }
+});
+</script>
+
   </body>
 </html>

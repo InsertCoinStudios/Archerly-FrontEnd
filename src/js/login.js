@@ -1,56 +1,73 @@
-const baseURL = 'https://your-backend-url/';
+const baseURL = "http://localhost:3000"; // anpassen
 
-document.addEventListener("DOMContentLoaded", function() {
-    const form = document.getElementById("loginForm");
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("loginForm");
 
-    form.addEventListener("submit", async function(e) {
-        e.preventDefault();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        // Inputs
-        const emailInput = form.querySelector('input[name="email"]');
-        const passwordInput = form.querySelector('input[name="password"]');
+    const email = form.email.value.trim();
+    const password = form.password.value.trim();
 
-        // Fehlermeldungen zurücksetzen
-        form.querySelectorAll(".error-text").forEach(span => span.textContent = "");
+    clearErrors();
 
-        let hasError = false;
+    let hasError = false;
 
-        // Einfache Validierung
-        if (!emailInput.value) {
-            emailInput.nextElementSibling.textContent = "Bitte E-Mail eingeben";
-            hasError = true;
-        }
-        if (!passwordInput.value) {
-            passwordInput.nextElementSibling.textContent = "Bitte Passwort eingeben";
-            hasError = true;
-        }
+    if (!email) {
+      showError("email", "Bitte E-Mail eingeben");
+      hasError = true;
+    }
 
-        if (hasError) return;
+    if (!password) {
+      showError("password", "Bitte Passwort eingeben");
+      hasError = true;
+    }
 
-        // Request ans Backend
-        try {
-            const response = await fetch(baseURL + "api/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: emailInput.value,
-                    password: passwordInput.value
-                })
-            });
+    if (hasError) return;
 
-            const data = await response.json();
+    try {
+      const res = await fetch(`${baseURL}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
 
-            if (response.ok) {
-                alert("Login erfolgreich!");
-                // Weiterleitung z.B.
-                window.location.href = "/dashboard";
-            } else {
-                // Fehler vom Backend anzeigen
-                alert(data.message || "Login fehlgeschlagen");
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Serverfehler, bitte später erneut versuchen");
-        }
-    });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Login fehlgeschlagen");
+        return;
+      }
+
+      // =========================
+      // JWT + USER SPEICHERN
+      // =========================
+      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("isAdmin", data.user.isAdmin);
+
+      // =========================
+      // WEITERLEITUNG
+      // =========================
+      if (data.user.isAdmin) {
+        window.location.href = "admin_main.html";
+      } else {
+        window.location.href = "index.html";
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Server nicht erreichbar");
+    }
+  });
 });
+
+function showError(fieldName, message) {
+  const input = document.querySelector(`[name="${fieldName}"]`);
+  const errorSpan = input.parentElement.querySelector(".error-text");
+  if (errorSpan) errorSpan.textContent = message;
+}
+
+function clearErrors() {
+  document.querySelectorAll(".error-text").forEach(span => span.textContent = "");
+}

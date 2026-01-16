@@ -40,9 +40,11 @@
             <h5>Tierarten: Löwe, Zebra, Giraffe</h5><br>
             <h5>Ort: Wüste</h5><br>
             <h5>Zusatz: Für Anfänger empfohlen</h5><br>
-            <div style="text-align: right;">
-              <a href="rating_choice.html"><button class="blue-parcour-btn" style="justify-self: right; margin-bottom: 15px;">Parkour auswählen</button></a>
-            </div>
+              <div style="text-align: right;">
+                <button class="blue-parcour-btn select-parcour-btn" data-name="01 Safari - Route" style="justify-self: right; margin-bottom: 15px;">
+                  Parkour auswählen
+                </button>
+              </div>
           </div>
           <button type="button" class="collapsible">
             <span class="pc-left">
@@ -56,9 +58,11 @@
             <h5>Tierarten: Löwe, Zebra, Giraffe</h5><br>
             <h5>Ort: Wüste</h5><br>
             <h5>Zusatz: Für Anfänger empfohlen</h5><br>
-            <div style="text-align: right;">
-              <a href="rating_choice.html"><button class="blue-parcour-btn" style="justify-self: right; margin-bottom: 15px;">Parkour auswählen</button></a>
-            </div>
+              <div style="text-align: right;">
+                <button class="blue-parcour-btn select-parcour-btn" data-name="02 Wicked Forest - Route" style="justify-self: right; margin-bottom: 15px;">
+                  Parkour auswählen
+                </button>
+              </div>
           </div>
           <button type="button" class="collapsible">
             <span class="pc-left">
@@ -72,9 +76,11 @@
             <h5>Tierarten: Löwe, Zebra, Giraffe</h5><br>
             <h5>Ort: Wüste</h5><br>
             <h5>Zusatz: Für Anfänger empfohlen</h5><br>
-            <div style="text-align: right;">
-              <a href="rating_choice.html"><button class="blue-parcour-btn" style="justify-self: right; margin-bottom: 15px;">Parkour auswählen</button></a>
-            </div>
+              <div style="text-align: right;">
+                <button class="blue-parcour-btn select-parcour-btn" data-name="03 Wald Ost - Route" style="justify-self: right; margin-bottom: 15px;">
+                  Parkour auswählen
+                </button>
+              </div>
           </div>
           <button type="button" class="collapsible">
             <span class="pc-left">
@@ -88,9 +94,11 @@
             <h5>Tierarten: Löwe, Zebra, Giraffe</h5><br>
             <h5>Ort: Wüste</h5><br>
             <h5>Zusatz: Für Anfänger empfohlen</h5><br>
-            <div style="text-align: right;">
-              <a href="rating_choice.html"><button class="blue-parcour-btn" style="justify-self: right; margin-bottom: 15px;">Parkour auswählen</button></a>
-            </div>
+              <div style="text-align: right;">
+                <button class="blue-parcour-btn select-parcour-btn" data-name="04 Wald West - Route" style="justify-self: right; margin-bottom: 15px;">
+                  Parkour auswählen
+                </button>
+              </div>
           </div>
         </div>
       </div>
@@ -128,5 +136,15 @@
       </div>
     </div>
     <script src="../js/collapse.js"></script>
+<script>
+document.querySelectorAll(".select-parcour-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const parcourName = btn.getAttribute("data-name");
+    localStorage.setItem("selectedParcour", parcourName);
+    window.location.href = "rating_choice.html";
+  });
+});
+</script>
+
   </body>
 </html>

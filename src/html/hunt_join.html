@@ -26,15 +26,15 @@
         </div>
       </div>
       <div class="content-top">
-        <label for="session-id"><h3>Session-ID eingeben:</h3><br></label>
+        <label for="session-id"><h3>Session-ID eingeben:</h3></label><br>
+        
         <input type="text" id="session-id" placeholder="#">
+        <span id="session-error" class="error-text-2"></span>
         <!-- DYNAMISCHE VORGEHENSWEISE NOTWENDIG, KONTROLLE DER SESSION-ID AUF EXISTENZ-->
       </div>
-      <div class="content">
-        <a href="hunt_join_successful.html">
-          <button class="blue-btn">Beitreten</button>
-        </a>
-      </div>
+        <div class="content">
+          <button class="blue-btn" id="joinBtn">Beitreten</button>
+        </div>
       <div class="semi-footer">
         <div class="target-circle" id="hunt_join_1">
           <span class="circle1">
@@ -68,5 +68,82 @@
         </div> 
       </div>
     </div>
+<script>
+const input = document.getElementById("session-id");
+const errorText = document.getElementById("session-error");
+const joinBtn = document.getElementById("joinBtn");
+
+joinBtn.addEventListener("click", async () => {
+  // Reset
+  errorText.textContent = "";
+  input.classList.remove("input-error");
+
+  const sessionId = input.value.trim();
+
+  // Leere Eingabe abfangen
+  if (!sessionId) {
+    errorText.textContent = "Ungültige ID. Bitte versuchen Sie es nochmal.";
+    input.classList.add("input-error");
+    return;
+  }
+
+  // Button deaktivieren & Loading anzeigen
+  joinBtn.disabled = true;
+  const originalText = joinBtn.textContent;
+  joinBtn.innerHTML = '<span style="font-size: 0.7em;">Bitte warten...</span>';
+
+  try {
+    // =========================
+    // LOKALE TESTDATEN (Simuliertes Backend)
+    // =========================
+    // Hier definierst du, welche Session-IDs gültig sind
+    await new Promise(r => setTimeout(r, 500)); // kurze Verzögerung, simuliert Netzwerk
+    const data = {
+      exists: sessionId === "1234", // z.B. nur Session "1234" existiert
+      message: "Session-ID existiert nicht."
+    };
+
+    // =========================
+    // ECHTES BACKEND (wenn verfügbar)
+    // =========================
+    // const response = await fetch("https://dein-backend-url/api/session/check", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ sessionId })
+    // });
+    // const data = await response.json();
+
+    if (data.exists) {
+      // Session existiert → weiterleiten
+      window.location.href = "hunt_join_successful.html";
+    } else {
+      // Session existiert nicht → Fehler anzeigen
+      errorText.textContent = data.message || "Session-ID existiert nicht.";
+      input.classList.add("input-error");
+    }
+
+  } catch (err) {
+    console.error(err);
+    errorText.textContent = "Serverfehler – bitte später erneut versuchen.";
+    input.classList.add("input-error");
+  } finally {
+    // Button wieder aktivieren
+    joinBtn.disabled = false;
+    joinBtn.textContent = originalText;
+  }
+});
+
+// Fehler entfernen beim Tippen
+input.addEventListener("input", () => {
+  if (input.value.trim()) {
+    errorText.textContent = "";
+    input.classList.remove("input-error");
+  }
+});
+localStorage.setItem("joinedSessionId", input.value.trim());
+
+</script>
+
+
   </body>
 </html>

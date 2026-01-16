@@ -24,9 +24,12 @@
   <div class="header-admin"><h1>Parkoure</h1></div>
   </div>
       <div class="content">
-        <div class="table_users_admin">
+        <div class="table_users_admin" id="parcourTable">
           <!-- DYNAMISCHE ANPASSUNG: NAMEN, GEGEBENE PARKOUREN
            FALLS ERSTER/LETZTER EINTRAG, DANN "-TOP"/"-BOTTOM" CLASS-->
+
+          <!--
+
           <div class="non-collapse-top-admin">
             <p>01 Safari - Route<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
@@ -39,10 +42,13 @@
           <div class="non-collapse-bottom-admin">
             <p>04 Wald West - Route<a href="admin_parcour.html"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a></p>
           </div>
+
+          -->
+
         </div>
       </div>
       <div class="footer">
-        <a href="admin_parcour.html">
+        <a href="admin_new_parcour.html">
           <button class="blue-btn-admin" style="float: right; margin-right: 15px; font-size: 24px;">Neu Anlegen</button>
         </a>
       </div>
@@ -61,5 +67,70 @@
             </span>
           </span>
         </div>
+        <script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+
+  const table = document.getElementById("parcourTable");
+  //SOBALD BACKEND WIEDER GEHT, DANN FETCH EINBAUEN
+
+  //const token = localStorage.getItem("authToken");
+  //const isAdmin = localStorage.getItem("isAdmin") === "true";
+
+  // Zugriffskontrolle
+  //if (!token || !isAdmin) {
+  //  window.location.href = "login.html";
+  //  return;
+  //}
+
+  try {
+    // === Backend aufrufen ===
+    //const res = await fetch("https://dein-backend-url/api/parcours", {
+    //  headers: { Authorization: `Bearer ${token}` }
+    //});
+
+    //if (!res.ok) throw new Error("Fehler beim Laden der Parcours");
+
+    //const parcours = await res.json();
+
+const parcours = [
+  { id: 1, name: "Safari - Route" },
+  { id: 2, name: "Wicked Forest - Route" },
+  { id: 3, name: "Wald Ost - Route" },
+  { id: 4, name: "Wald West - Route" },
+];
+
+
+    // === Tabelle leeren ===
+    table.innerHTML = "";
+
+    parcours.forEach((p, idx) => {
+      // Klasse bestimmen
+      let rowClass = "non-collapse-admin";
+      if (idx === 0) rowClass = "non-collapse-top-admin";
+      if (idx === parcours.length - 1) rowClass = "non-collapse-bottom-admin";
+
+      // HTML für eine Zeile
+      const row = document.createElement("div");
+      row.className = rowClass;
+
+      row.innerHTML = `
+        <p>${String(idx + 1).padStart(2, "0")} ${p.name}
+          <a href="admin_parcour.html?id=${p.id}">
+            <img class="edit_png" src="../img/edit_square.png" alt="edit">
+          </a>
+        </p>
+      `;
+
+      table.appendChild(row);
+    });
+
+  } catch (err) {
+    console.error(err);
+    table.innerHTML = "<p>Fehler beim Laden der Parcours</p>";
+  }
+
+});
+</script>
   </body>
 </html>

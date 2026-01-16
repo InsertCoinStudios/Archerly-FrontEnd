@@ -8,8 +8,8 @@
   </head>
   <body>
     <div class="header-bg">
-      <a href="admin_parcour.html"><img src="../img/return.png" class="header-img"></a>
-      <img src="../img/trash.png" class="header-img-2" id="returnBtn">
+      <img src="../img/return.png" class="header-img" id="returnBtn">
+      <img src="../img/trash.png" class="header-img-2" id="deleteBtn">
     </div>
     <div class="bg-wrapper">
     <div class="bg-dark-admin">
@@ -44,7 +44,10 @@
         <div class="silhouettes-grid"></div>
         
 
-        <button class="blue-btn-admin" style="float: right; margin: 10px;">Speichern</button>
+        <button class="blue-btn-admin" id="saveBtn" style="float: right; margin: 10px;">
+  Speichern
+</button>
+
       </div>
       <div class="footer">
         <div class="target-circle" id="hunt_join_2">
@@ -74,17 +77,22 @@
   </div>
 </div>
 <script>
-  const returnBtn = document.getElementById("returnBtn");
+  const deleteBtn = document.getElementById("deleteBtn");
   const overlay = document.getElementById("leaveOverlay");
   const yesBtn = document.getElementById("leaveYes");
   const noBtn = document.getElementById("leaveNo");
 
-  returnBtn.addEventListener("click", () => {
+  deleteBtn.addEventListener("click", () => {
     overlay.style.display = "flex";
   });
 
   yesBtn.addEventListener("click", () => {
-    window.location.href = "admin_parcour.html";
+     if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      // Fallback, falls Seite direkt geöffnet wurde
+      window.location.href = "admin_main.html";
+    }
   });
 
   noBtn.addEventListener("click", () => {
@@ -100,14 +108,87 @@
 </script>
 <script>
   const grid = document.querySelector(".silhouettes-grid");
-  const totalBoxes = 12; // Anzahl der Boxen
+  const nameInput = document.getElementById("animal-name");
+  const saveBtn = document.getElementById("saveBtn");
 
+  let selectedBox = null;
+
+  // Silhouetten erzeugen
+  const totalBoxes = 12;
   for (let i = 1; i <= totalBoxes; i++) {
     const box = document.createElement("div");
     box.classList.add("silhouette-box-admin");
     box.textContent = `Tier ${i}`;
+
+    box.addEventListener("click", () => {
+      // alte Auswahl entfernen
+      document
+        .querySelectorAll(".silhouette-box-admin.selected")
+        .forEach(b => b.classList.remove("selected"));
+
+      // neue Auswahl setzen
+      box.classList.add("selected");
+      selectedBox = box;
+
+      validateSaveButton();
+    });
+
     grid.appendChild(box);
   }
+
+  // Button initial deaktivieren
+  saveBtn.disabled = true;
+  saveBtn.style.opacity = "0.5";
+  saveBtn.style.pointerEvents = "none";
+
+  // Name-Input überwachen
+  nameInput.addEventListener("input", validateSaveButton);
+
+  function validateSaveButton() {
+    const name = nameInput.value.trim();
+
+    const hasValidName = name !== "" && name.toLowerCase() !== "tier";
+    const hasSelection = selectedBox !== null;
+
+    if (hasValidName && hasSelection) {
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = "1";
+      saveBtn.style.pointerEvents = "auto";
+    } else {
+      saveBtn.disabled = true;
+      saveBtn.style.opacity = "0.5";
+      saveBtn.style.pointerEvents = "none";
+    }
+  }
+
+  // Klick auf Speichern
+  saveBtn.addEventListener("click", (e) => {
+    const name = nameInput.value.trim();
+
+    if (!selectedBox) {
+      alert("Bitte eine Silhouette auswählen!");
+      return;
+    }
+
+    if (name === "" || name.toLowerCase() === "tier") {
+      alert("Bitte den Namen eintragen!");
+      return;
+    }
+
+    // ✅ Hier kommt später dein echtes Speichern
+    alert(`Gespeichert:\nName: ${name}\nSilhouette: ${selectedBox.textContent}`);
+  });
+</script>
+
+<script>
+  document.getElementById("returnBtn").addEventListener("click", () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      // Fallback, falls Seite direkt geöffnet wurde
+      window.location.href = "admin_main.html";
+    }
+  });
 </script>
 
   </body>
