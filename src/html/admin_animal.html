@@ -107,77 +107,130 @@
 
 </script>
 <script>
-  const grid = document.querySelector(".silhouettes-grid");
-  const nameInput = document.getElementById("animal-name");
-  const saveBtn = document.getElementById("saveBtn");
+const urlParams = new URLSearchParams(window.location.search);
+const parcourId = urlParams.get("parcourId") || "new";
+const animalIndex = parseInt(urlParams.get("animalIndex"), 10);
 
-  let selectedBox = null;
+const nameInput = document.getElementById("animal-name");
+const saveBtn = document.getElementById("saveBtn");
+const grid = document.querySelector(".silhouettes-grid");
 
-  // Silhouetten erzeugen
-  const totalBoxes = 12;
-  for (let i = 1; i <= totalBoxes; i++) {
-    const box = document.createElement("div");
-    box.classList.add("silhouette-box-admin");
-    box.textContent = `Tier ${i}`;
+let selectedBox = null;
+let currentParcour = { animals: [] };
 
-    box.addEventListener("click", () => {
-      // alte Auswahl entfernen
-      document
-        .querySelectorAll(".silhouette-box-admin.selected")
-        .forEach(b => b.classList.remove("selected"));
+// 1️⃣ Silhouetten erzeugen
+const totalBoxes = 12;
+for (let i = 1; i <= totalBoxes; i++) {
+  const box = document.createElement("div");
+  box.classList.add("silhouette-box-admin");
+  box.textContent = `Tier ${i}`;
+  box.dataset.id = i;
 
-      // neue Auswahl setzen
-      box.classList.add("selected");
-      selectedBox = box;
-
-      validateSaveButton();
-    });
-
-    grid.appendChild(box);
-  }
-
-  // Button initial deaktivieren
-  saveBtn.disabled = true;
-  saveBtn.style.opacity = "0.5";
-  saveBtn.style.pointerEvents = "none";
-
-  // Name-Input überwachen
-  nameInput.addEventListener("input", validateSaveButton);
-
-  function validateSaveButton() {
-    const name = nameInput.value.trim();
-
-    const hasValidName = name !== "" && name.toLowerCase() !== "tier";
-    const hasSelection = selectedBox !== null;
-
-    if (hasValidName && hasSelection) {
-      saveBtn.disabled = false;
-      saveBtn.style.opacity = "1";
-      saveBtn.style.pointerEvents = "auto";
-    } else {
-      saveBtn.disabled = true;
-      saveBtn.style.opacity = "0.5";
-      saveBtn.style.pointerEvents = "none";
-    }
-  }
-
-  // Klick auf Speichern
-  saveBtn.addEventListener("click", (e) => {
-    const name = nameInput.value.trim();
-
-    if (!selectedBox) {
-      alert("Bitte eine Silhouette auswählen!");
-      return;
-    }
-
-    if (name === "" || name.toLowerCase() === "tier") {
-      alert("Bitte den Namen eintragen!");
-      return;
-    }
-
-    // ✅ Hier kommt später dein echtes Speichern
-    alert(`Gespeichert:\nName: ${name}\nSilhouette: ${selectedBox.textContent}`);
+  box.addEventListener("click", () => {
+    document.querySelectorAll(".silhouette-box-admin.selected")
+      .forEach(b => b.classList.remove("selected"));
+    box.classList.add("selected");
+    selectedBox = box;
+    validateSaveButton();
   });
+
+  grid.appendChild(box);
+}
+
+// 2️⃣ Parcour laden
+if (parcourId === "new") {
+  currentParcour = JSON.parse(localStorage.getItem("newParcour") || '{"animals":[]}');
+} else {
+  fetch(`https://dein-backend-url/api/parcours/${parcourId}`, {
+    headers: { "Authorization": `Bearer ${localStorage.getItem("authToken")}` }
+  })
+  .then(res => res.json())
+  .then(data => {
+    currentParcour = data;
+    loadAnimal();
+  });
+}
+
+// 3️⃣ Tierdaten laden
+function loadAnimal() {
+  const animal = currentParcour.animals[animalIndex];
+  if (!animal) return;
+
+  nameInput.value = animal.name;
+
+  // Silhouette markieren
+  const box = grid.querySelector(`.silhouette-box-admin[data-id="${animal.silhouette}"]`);
+  if (box) {
+    box.classList.add("selected");
+    selectedBox = box;
+  }
+
+  validateSaveButton();
+}
+
+// 4️⃣ Save Button validieren
+function validateSaveButton() {
+  const hasValidName = nameInput.value.trim() !== "" && nameInput.value.toLowerCase() !== "tier";
+  const hasSelection = selectedBox !== null;
+
+  if (hasValidName && hasSelection) {
+    saveBtn.disabled = false;
+    saveBtn.style.opacity = "1";
+    saveBtn.style.pointerEvents = "auto";
+  } else {
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = "0.5";
+    saveBtn.style.pointerEvents = "none";
+  }
+}
+
+nameInput.addEventListener("input", validateSaveButton);
+
+// 5️⃣ Speichern
+saveBtn.addEventListener("click", async () => {
+  const name = nameInput.value.trim();
+  if (!selectedBox || !name) {
+    alert("Bitte Name und Silhouette auswählen!");
+    return;
+  }
+
+  const animalData = { name, silhouette: selectedBox.dataset.id };
+
+  if (!currentParcour.animals) currentParcour.animals = [];
+
+  // Neues Tier oder bestehendes überschreiben
+  if (isNaN(animalIndex) || animalIndex >= currentParcour.animals.length) {
+    currentParcour.animals.push(animalData);
+  } else {
+    currentParcour.animals[animalIndex] = animalData;
+  }
+
+  if (parcourId === "new") {
+    localStorage.setItem("newParcour", JSON.stringify(currentParcour));
+    window.history.back();
+  } else {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(`https://dein-backend-url/api/parcours/${parcourId}/animals`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(currentParcour.animals)
+      });
+
+      if (!response.ok) throw new Error("Fehler beim Speichern");
+
+      alert("Tier erfolgreich aktualisiert!");
+      window.history.back();
+    } catch (err) {
+      console.error(err);
+      alert("Fehler beim Speichern des Tiers.");
+    }
+  }
+});
+
 </script>
 
 <script>

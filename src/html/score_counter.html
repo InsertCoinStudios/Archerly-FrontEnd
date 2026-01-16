@@ -61,17 +61,17 @@ const TOTAL_ANIMALS = 24;
 
 // Bewertung aus rating_choice.html
 // localStorage.setItem("ratingMode", "two" | "three")
-const ratingMode = localStorage.getItem("ratingMode") || "two";
+const ratingMode = localStorage.getItem("ratingMode") || "Zweipfeil";
 
 const RATING_CONFIG = {
-  two: {
+  Zweipfeil: {
     shotsPerAnimal: 2,
     pointsPerShot: [
       [20, 18, 16, "MISS"],
       [20, 18, 16, "MISS"]
     ]
   },
-  three: {
+  Dreipfeil: {
     shotsPerAnimal: 3,
     pointsPerShot: [
       [20, 18, 16, "MISS"],
@@ -181,7 +181,7 @@ pointBoxes.forEach(box => {
     // =========================
     // ZWEIPFEIL-BEWERTUNG
     // =========================
-    if (ratingMode === "two") {
+    if (ratingMode === "Zweipfeil") {
       if (currentShot === config.shotsPerAnimal) {
         nextAnimal();
       }
@@ -190,7 +190,7 @@ pointBoxes.forEach(box => {
     // =========================
     // DREIPFEIL-BEWERTUNG
     // =========================
-    if (ratingMode === "three") {
+    if (ratingMode === "Dreipfeil") {
       if (value !== "MISS" || currentShot === config.shotsPerAnimal) {
         nextAnimal();
       }
