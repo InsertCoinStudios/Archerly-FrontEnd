@@ -143,62 +143,46 @@
     </div>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-const urlParams = new URLSearchParams(window.location.search);
-const parcourId = urlParams.get('ParcourId'); // <-- KORRIGIERT
-
+  const urlParams = new URLSearchParams(window.location.search);
+  const parcourId = urlParams.get('ParcourId');
 
   if (!parcourId) {
     alert("Kein Parcour ausgewählt!");
     window.location.href = "admin_main.html";
+    return;
   }
 
+  // ======= BASIS-ELEMENTE =======
   const animalList = document.querySelector('.table_users_admin-editor');
   const animalCounter = document.querySelector('.animal-counter');
+  const nameInput = document.getElementById("parcour-name");
+  const locInput = document.getElementById("parcour-loc");
+  const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
+  const saveBtn = document.getElementById("saveBtn");
 
-  // =========================
-  // Tierzeilen aus LocalStorage holen (bestehender Parcours)
-  // =========================
+  // ======= EXISTIERENDE TIERE LADEN =======
   const savedParcours = JSON.parse(localStorage.getItem("parcours_" + parcourId) || "{}");
   const animals = savedParcours.animals || [];
 
-  // DOM aufbauen
   animalList.innerHTML = "";
   if (animals.length > 0) {
     animals.forEach((animal, index) => {
-      const row = createAnimalRow(animal.name, index);
-      animalList.appendChild(row);
+      animalList.appendChild(createAnimalRow(animal.name, index));
     });
   } else {
-    // mindestens 1 Tier
     animalList.appendChild(createAnimalRow("Tier", 0));
   }
 
-  // Counter korrekt initialisieren
+  // ======= COUNTER INITIAL =======
   let currentAnimals = animalList.children.length;
   let minAnimals = currentAnimals;
   animalCounter.value = currentAnimals;
   animalCounter.min = minAnimals;
 
-  refreshRowClasses();
-  validateSave();
-
-  // =========================
-  // Funktionen
-  // =========================
-  function refreshRowClasses() {
-    const rows = animalList.children;
-    Array.from(rows).forEach(row => {
-      row.classList.remove('non-collapse-top-admin','non-collapse-bottom-admin','non-collapse-admin');
-      row.classList.add('non-collapse-admin');
-    });
-    if (rows.length > 0) {
-      rows[0].classList.replace('non-collapse-admin','non-collapse-top-admin');
-      rows[rows.length-1].classList.replace('non-collapse-admin','non-collapse-bottom-admin');
-    }
-  }
-
+  // ======= FUNKTIONEN =======
   function createAnimalRow(name = 'Tier', index = null) {
     if (index === null) index = animalList.children.length;
     const div = document.createElement('div');
@@ -213,38 +197,17 @@ const parcourId = urlParams.get('ParcourId'); // <-- KORRIGIERT
     return div;
   }
 
-  // =========================
-  // Counter-Änderung
-  // =========================
-  animalCounter.addEventListener('input', () => {
-    const target = parseInt(animalCounter.value, 10);
-    if (target < minAnimals) {
-      animalCounter.value = currentAnimals;
-      return;
+  function refreshRowClasses() {
+    const rows = Array.from(animalList.children);
+    rows.forEach(row => {
+      row.classList.remove('non-collapse-top-admin','non-collapse-bottom-admin','non-collapse-admin');
+      row.classList.add('non-collapse-admin');
+    });
+    if (rows.length > 0) {
+      rows[0].classList.replace('non-collapse-admin','non-collapse-top-admin');
+      rows[rows.length-1].classList.replace('non-collapse-admin','non-collapse-bottom-admin');
     }
-
-    if (target > currentAnimals) {
-      const toAdd = target - currentAnimals;
-      for (let i=0; i<toAdd; i++) {
-        animalList.appendChild(createAnimalRow("Tier"));
-      }
-      currentAnimals = animalList.children.length;
-      minAnimals = currentAnimals;
-      animalCounter.min = minAnimals;
-      animalCounter.value = currentAnimals;
-
-      refreshRowClasses();
-      validateSave();
-    }
-  });
-
-  // =========================
-  // Validierung + Save
-  // =========================
-  const nameInput = document.getElementById("parcour-name");
-  const locInput = document.getElementById("parcour-loc");
-  const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
-  const saveBtn = document.getElementById("saveBtn");
+  }
 
   function validateSave() {
     const nameOk = nameInput.value.trim() !== "";
@@ -255,11 +218,8 @@ const parcourId = urlParams.get('ParcourId'); // <-- KORRIGIERT
     const hasAnimals = animalsArr.length > 0;
     const hasInvalidAnimal = animalsArr.some(a => a === "" || a.toLowerCase() === "tier");
 
-    if (nameOk && locOk && difficultyOk && hasAnimals && !hasInvalidAnimal) {
-      enableSave();
-    } else {
-      disableSave();
-    }
+    if (nameOk && locOk && difficultyOk && hasAnimals && !hasInvalidAnimal) enableSave();
+    else disableSave();
   }
 
   function disableSave() {
@@ -273,30 +233,38 @@ const parcourId = urlParams.get('ParcourId'); // <-- KORRIGIERT
     saveBtn.style.pointerEvents = "auto";
   }
 
+  // ======= EVENTS =======
   nameInput.addEventListener("input", validateSave);
   locInput.addEventListener("input", validateSave);
   difficultyRadios.forEach(r => r.addEventListener("change", validateSave));
 
+  // MutationObserver für Tieränderungen
   const observer = new MutationObserver(validateSave);
   observer.observe(animalList, { childList: true, subtree: true, characterData: true });
 
-  saveBtn.addEventListener("click", () => {
-    const animalsArr = Array.from(animalList.querySelectorAll('.animal-text')).map(a => a.innerText.trim());
-    if (animalsArr.some(a => a.toLowerCase() === "tier")) {
-      alert("Bitte alle Tiere benennen!");
+  // ======= COUNTER LOGIK =======
+  animalCounter.addEventListener('input', () => {
+    let target = parseInt(animalCounter.value, 10);
+
+    if (target < minAnimals) {
+      animalCounter.value = currentAnimals;
       return;
     }
-    // LocalStorage Update
-    localStorage.setItem("parcours_" + parcourId, JSON.stringify({
-      ...savedParcours,
-      animals: animalsArr
-    }));
-    alert("✅ Parcour erfolgreich gespeichert!");
+
+    while (currentAnimals < target) {
+      animalList.appendChild(createAnimalRow());
+      currentAnimals++;
+    }
+
+    minAnimals = currentAnimals;
+    animalCounter.min = minAnimals;
+    animalCounter.value = currentAnimals;
+
+    refreshRowClasses();
+    validateSave();
   });
 
-  // =========================
-  // SortableJS
-  // =========================
+  // ======= SORTABLE.JS =======
   Sortable.create(animalList, {
     animation: 150,
     ghostClass: 'sortable-ghost',
@@ -305,202 +273,28 @@ const parcourId = urlParams.get('ParcourId'); // <-- KORRIGIERT
     onEnd: refreshRowClasses
   });
 
-});
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script>
-  // =========================
-  // BASIS-ELEMENTE
-  // =========================
-  const animalList = document.querySelector('.table_users_admin-editor');
-  const animalCounter = document.querySelector('.animal-counter');
-
-  // =========================
-  // SORTABLE.JS
-  // =========================
-  const sortable = Sortable.create(animalList, {
-    animation: 150,
-    ghostClass: 'sortable-ghost',
-    handle: '.drag-handle',
-    forceFallback: true,
-    onEnd: refreshRowClasses
-  });
-
-  // =========================
-  // KLASSEN KORREKT SETZEN
-  // =========================
-  function refreshRowClasses() {
-    const rows = animalList.children;
-
-    Array.from(rows).forEach(row => {
-      row.classList.remove(
-        'non-collapse-top-admin',
-        'non-collapse-bottom-admin',
-        'non-collapse-admin'
-      );
-      row.classList.add('non-collapse-admin');
-    });
-
-    if (rows.length > 0) {
-      rows[0].classList.replace('non-collapse-admin', 'non-collapse-top-admin');
-      rows[rows.length - 1].classList.replace('non-collapse-admin', 'non-collapse-bottom-admin');
-    }
-  }
-
-  // =========================
-  // REIHENFOLGE AUSLESEN
-  // =========================
-  function getAnimalOrder() {
-    return Array.from(
-      animalList.querySelectorAll('.animal-text')
-    ).map(el => el.innerText.trim());
-  }
-
-  saveBtn.addEventListener('click', () => {
-    console.log('Neue Reihenfolge:', getAnimalOrder());
-  });
-
-  // =========================
-  // COUNTER + ADD-LOGIC
-  // =========================
-
-  let minAnimals = animalList.children.length;
-  let currentAnimals = minAnimals;
-
-  // Initial Counter setzen
-  animalCounter.value = minAnimals;
-  animalCounter.min = minAnimals;
-
-  // Neue Tier-Zeile
-  function createAnimalRow(name = 'Tier') {
-    const div = document.createElement('div');
-    div.className = 'non-collapse-admin';
-    div.innerHTML = `
-      <span class="drag-handle">&#x2630;</span>
-      <span class="animal-text">${name}</span>
-      <a href="admin_animal.html">
-        <img class="edit_png" src="../img/edit_square.png" alt="edit">
-      </a>
-    `;
-    return div;
-  }
-
-  // Counter-Änderung
-  animalCounter.addEventListener('input', () => {
-    const target = parseInt(animalCounter.value, 10);
-
-    // ❌ Reduzieren verboten
-    if (target < minAnimals) {
-      animalCounter.value = currentAnimals;
-      return;
-    }
-
-    // ➕ Tiere hinzufügen
-    if (target > currentAnimals) {
-      const toAdd = target - currentAnimals;
-
-      for (let i = 0; i < toAdd; i++) {
-        animalList.appendChild(createAnimalRow());
-      }
-
-    currentAnimals = animalList.children.length;
-    minAnimals = currentAnimals;      // ⭐ WICHTIG
-    animalCounter.min = minAnimals;   // ⭐ UI absichern
-    animalCounter.value = currentAnimals;
-
-    refreshRowClasses();
-
-    }
-  });
-
-  // Initial korrekt setzen
-  refreshRowClasses();
-
-</script>
-<script>
-  // =========================
-  // FORM ELEMENTE
-  // =========================
-  const nameInput = document.getElementById("parcour-name");
-  const locInput = document.getElementById("parcour-loc");
-  const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
-  const saveBtn = document.getElementById("saveBtn");
-
-  // =========================
-  // BUTTON INITIAL DEAKTIVIEREN
-  // =========================
-  disableSave();
-
-  function disableSave() {
-    saveBtn.disabled = true;
-    saveBtn.style.opacity = "0.5";
-    saveBtn.style.pointerEvents = "none";
-  }
-
-  function enableSave() {
-    saveBtn.disabled = false;
-    saveBtn.style.opacity = "1";
-    saveBtn.style.pointerEvents = "auto";
-  }
-
-  // =========================
-  // VALIDIERUNG
-  // =========================
-  function validateSave() {
-    const nameOk = nameInput.value.trim() !== "";
-    const locOk = locInput.value.trim() !== "";
-
-    const difficultyOk = Array.from(difficultyRadios).some(r => r.checked);
-
-    const animals = Array.from(
-      document.querySelectorAll(".animal-text")
-    ).map(a => a.innerText.trim());
-
-    const hasAnimals = animals.length > 0;
-    const hasInvalidAnimal = animals.some(
-      name => name === "" || name.toLowerCase() === "tier"
-    );
-
-    if (nameOk && locOk && difficultyOk && hasAnimals && !hasInvalidAnimal) {
-      enableSave();
-    } else {
-      disableSave();
-    }
-  }
-
-  // =========================
-  // EVENTS
-  // =========================
-  nameInput.addEventListener("input", validateSave);
-  locInput.addEventListener("input", validateSave);
-  difficultyRadios.forEach(r => r.addEventListener("change", validateSave));
-
-  // Wenn Tiere hinzugefügt / sortiert werden
-  const observer = new MutationObserver(validateSave);
-  observer.observe(document.querySelector(".table_users_admin-editor"), {
-    childList: true,
-    subtree: true,
-    characterData: true
-  });
-
-  // =========================
-  // SPEICHERN KLICK
-  // =========================
+  // ======= SAVE BUTTON =======
   saveBtn.addEventListener("click", () => {
-    const animals = Array.from(
-      document.querySelectorAll(".animal-text")
-    ).map(a => a.innerText.trim());
-
-    if (animals.some(a => a.toLowerCase() === "tier")) {
+    const animalsArr = Array.from(animalList.querySelectorAll('.animal-text')).map(a => a.innerText.trim());
+    if (animalsArr.some(a => a.toLowerCase() === "tier")) {
       alert("Bitte alle Tiere benennen!");
       return;
     }
 
-    alert("✅ Parkour erfolgreich gespeichert!");
-    // 👉 hier später echtes Backend-Save
+    localStorage.setItem("parcours_" + parcourId, JSON.stringify({
+      ...savedParcours,
+      animals: animalsArr
+    }));
+
+    alert("✅ Parcour erfolgreich gespeichert!");
   });
+
+  // ======= INITIAL =======
+  refreshRowClasses();
+  validateSave();
+});
 </script>
+
 
   </body>
 </html>
