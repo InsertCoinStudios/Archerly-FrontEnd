@@ -115,12 +115,141 @@
         </div>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
+// =========================
+// AUTO-RESET BEIM VERLASSEN DER SEITE
+// =========================
+window.addEventListener("beforeunload", (event) => {
+  // Prüfen, wohin der Benutzer navigiert
+  // Wenn admin_animal.html im Ziel enthalten ist, nichts löschen
+  const destination = document.activeElement?.href || document.referrer || "";
+  if (!destination.includes("admin_animal.html")) {
+    localStorage.removeItem("draft_newParcour");
+  }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
   // =========================
   // BASIS-ELEMENTE
   // =========================
   const animalList = document.querySelector('.table_users_admin-editor');
   const animalCounter = document.querySelector('.animal-counter');
   const saveBtn = document.getElementById("saveBtn");
+  const nameInput = document.getElementById("parcour-name");
+  const locInput = document.getElementById("parcour-loc");
+  const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
+
+  // =========================
+  // FUNKTIONEN
+  // =========================
+  function refreshRowClasses() {
+    const rows = animalList.children;
+    Array.from(rows).forEach(row => {
+      row.classList.remove(
+        'non-collapse-top-admin',
+        'non-collapse-bottom-admin',
+        'non-collapse-admin'
+      );
+      row.classList.add('non-collapse-admin');
+    });
+    if (rows.length > 0) {
+      rows[0].classList.replace('non-collapse-admin', 'non-collapse-top-admin');
+      rows[rows.length - 1].classList.replace('non-collapse-admin', 'non-collapse-bottom-admin');
+    }
+  }
+
+  function getAnimalOrder() {
+    return Array.from(
+      animalList.querySelectorAll('.animal-text')
+    ).map(el => el.innerText.trim());
+  }
+
+  function createAnimalRow(name = 'Tier', index = null) {
+    if (index === null) index = animalList.children.length;
+
+    const div = document.createElement('div');
+    div.className = 'non-collapse-admin';
+    div.innerHTML = `
+      <span class="drag-handle">&#x2630;</span>
+      <span class="animal-text">${name}</span>
+      <a href="admin_animal.html?context=new&animalIndex=${index}">
+        <img class="edit_png" src="../img/edit_square.png" alt="edit">
+      </a>
+    `;
+    return div;
+  }
+
+  function syncAnimalsToDraft() {
+    const savedParcour = JSON.parse(
+      localStorage.getItem("draft_newParcour") || '{"animals":[]}'
+    );
+
+    const names = Array.from(animalList.querySelectorAll('.animal-text'))
+      .map(el => el.innerText.trim());
+
+    if (names.length === 0) {
+      savedParcour.animals = [{ name: "Tier", silhouette: null }];
+    } else {
+      savedParcour.animals = names.map((name, i) => ({
+        name,
+        silhouette: savedParcour.animals?.[i]?.silhouette || null
+      }));
+    }
+
+    localStorage.setItem("draft_newParcour", JSON.stringify(savedParcour));
+  }
+
+  function validateSave() {
+    const nameOk = nameInput.value.trim() !== "";
+    const locOk = locInput.value.trim() !== "";
+    const difficultyOk = Array.from(difficultyRadios).some(r => r.checked);
+
+    const animals = Array.from(animalList.querySelectorAll('.animal-text'))
+      .map(a => a.innerText.trim());
+
+    const hasAnimals = animals.length > 0;
+    const hasInvalidAnimal = animals.some(name => name === "" || name.toLowerCase() === "tier");
+
+    if (nameOk && locOk && difficultyOk && hasAnimals && !hasInvalidAnimal) enableSave();
+    else disableSave();
+  }
+
+  function enableSave() {
+    saveBtn.disabled = false;
+    saveBtn.style.opacity = "1";
+    saveBtn.style.pointerEvents = "auto";
+  }
+
+  function disableSave() {
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = "0.5";
+    saveBtn.style.pointerEvents = "none";
+  }
+
+  // =========================
+  // INITIAL TIERE LADEN
+  // =========================
+  const savedParcour = JSON.parse(
+    localStorage.getItem("draft_newParcour") || '{"animals":[]}'
+  );
+  const animals = savedParcour.animals || [];
+
+  animalList.innerHTML = "";
+  if (animals.length > 0) {
+    animals.forEach((animal, index) => {
+      animalList.appendChild(createAnimalRow(animal.name, index));
+    });
+  } else {
+    animalList.appendChild(createAnimalRow("Tier", 0));
+  }
+
+  // =========================
+  // COUNTER INITIALISIEREN
+  // =========================
+  let currentAnimals = animalList.children.length;
+  animalCounter.value = currentAnimals;
+  animalCounter.min = 1;
 
   // =========================
   // SORTABLE.JS
@@ -134,111 +263,57 @@
   });
 
   // =========================
-  // KLASSEN KORREKT SETZEN
+  // COUNTER-LOGIK
   // =========================
-  function refreshRowClasses() {
-    const rows = animalList.children;
+  animalCounter.addEventListener("input", () => {
+    const target = parseInt(animalCounter.value, 10);
+    const current = animalList.children.length;
 
-    Array.from(rows).forEach(row => {
-      row.classList.remove(
-        'non-collapse-top-admin',
-        'non-collapse-bottom-admin',
-        'non-collapse-admin'
-      );
-      row.classList.add('non-collapse-admin');
-    });
-
-    if (rows.length > 0) {
-      rows[0].classList.replace('non-collapse-admin', 'non-collapse-top-admin');
-      rows[rows.length - 1].classList.replace('non-collapse-admin', 'non-collapse-bottom-admin');
+    if (target > current) {
+      const toAdd = target - current;
+      for (let i = 0; i < toAdd; i++) {
+        animalList.appendChild(createAnimalRow());
+      }
     }
-  }
+
+    animalCounter.value = animalList.children.length;
+    refreshRowClasses();
+    syncAnimalsToDraft();
+    validateSave();
+  });
 
   // =========================
-  // REIHENFOLGE AUSLESEN
+  // EVENTS
   // =========================
-  function getAnimalOrder() {
-    return Array.from(
-      animalList.querySelectorAll('.animal-text')
-    ).map(el => el.innerText.trim());
-  }
+  nameInput.addEventListener("input", validateSave);
+  locInput.addEventListener("input", validateSave);
+  difficultyRadios.forEach(r => r.addEventListener("change", validateSave));
 
-  saveBtn.addEventListener('click', () => {
+  const observer = new MutationObserver(validateSave);
+  observer.observe(animalList, { childList: true, subtree: true, characterData: true });
+
+  saveBtn.addEventListener("click", () => {
     console.log('Neue Reihenfolge:', getAnimalOrder());
   });
 
   // =========================
-  // COUNTER + ADD-LOGIC
+  // FINAL INITIALISIERUNG
   // =========================
-
-  let minAnimals = animalList.children.length;
-  let currentAnimals = minAnimals;
-
-  // Initial Counter setzen
-  animalCounter.value = minAnimals;
-  animalCounter.min = minAnimals;
-
-  // Neue Tier-Zeile
-function createAnimalRow(name = 'Tier', index = null) {
-  if (index === null) {
-    // Index = aktueller letzter Index im localStorage
-    const savedParcour = JSON.parse(localStorage.getItem("newParcour") || "{}");
-    const animals = savedParcour.animals || [];
-    index = animals.length;
-  }
-
-  const div = document.createElement('div');
-  div.className = 'non-collapse-admin';
-  div.innerHTML = `
-    <span class="drag-handle">&#x2630;</span>
-    <span class="animal-text">${name}</span>
-    <a href="admin_animal.html?parcourId=new&animalIndex=${index}">
-      <img class="edit_png" src="../img/edit_square.png" alt="edit">
-    </a>
-  `;
-  return div;
-}
-
-
-
-
-  // Counter-Änderung
-animalCounter.addEventListener('input', () => {
-  const target = parseInt(animalCounter.value, 10);
-
-  // Reduzieren verboten
-  if (target < minAnimals) {
-    animalCounter.value = currentAnimals;
-    return;
-  }
-
-  if (target > currentAnimals) {
-    const toAdd = target - currentAnimals;
-    for (let i = 0; i < toAdd; i++) {
-      const row = createAnimalRow("Tier"); // kein Index nötig → wird korrekt aus localStorage abgeleitet
-      animalList.appendChild(row);
-    }
-
-    currentAnimals = animalList.children.length;
-    minAnimals = currentAnimals;
-    animalCounter.min = minAnimals;
-    animalCounter.value = currentAnimals;
-
-    refreshRowClasses();
-    validateSave();
-  }
-});
-
-
-
-  // Initial korrekt setzen
   refreshRowClasses();
-
+  validateSave();
+  syncAnimalsToDraft();
+});
 </script>
+
+
+
 <script>
 // Nach DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
-  const savedParcour = JSON.parse(localStorage.getItem("newParcour") || "{}");
+
+const savedParcour = JSON.parse(
+  localStorage.getItem("draft_newParcour") || '{"animals":[]}'
+);
   const animals = savedParcour.animals || [];
 
   // 1️⃣ DOM aufbauen
@@ -255,15 +330,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // 2️⃣ Counter synchronisieren
+  let currentAnimals = 0; // DOM bestimmt die Zahl
   currentAnimals = animalList.children.length;
-  minAnimals = currentAnimals;
   animalCounter.value = currentAnimals;
-  animalCounter.min = minAnimals;
 
   refreshRowClasses();
   validateSave();
 });
-
 
 
 const nameInput = document.getElementById("parcour-name");
@@ -357,6 +430,7 @@ saveBtn.addEventListener("click", async () => {
     if (!response.ok) throw new Error("Fehler beim Speichern des Parcours");
 
     alert("✅ Parcour erfolgreich erstellt!");
+    localStorage.removeItem("draft_newParcour");
     window.location.href = "admin_main.html"; // Zurück zur Übersicht
 
   } catch (err) {
@@ -364,8 +438,7 @@ saveBtn.addEventListener("click", async () => {
     alert("Fehler beim Erstellen des Parcours. Bitte erneut versuchen.");
   }
 });
+
 </script>
-
-
   </body>
 </html>

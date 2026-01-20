@@ -86,14 +86,61 @@
     overlay.style.display = "flex";
   });
 
-  yesBtn.addEventListener("click", () => {
-     if (window.history.length > 1) {
+yesBtn.addEventListener("click", async () => {
+  if (!currentParcour.animals || isNaN(animalIndex)) {
+    window.history.back();
+    return;
+  }
+
+  // 🚫 MINDESTENS 1 TIER MUSS BLEIBEN
+  if (currentParcour.animals.length <= 1) {
+    alert("Mindestens ein Tier muss im Parcour enthalten sein.");
+    overlay.style.display = "none";
+    return;
+  }
+
+  // 🗑️ Tier entfernen
+  currentParcour.animals.splice(animalIndex, 1);
+
+
+  // 🆕 NEUER PARCOUR → Draft aktualisieren
+  if (context === "new") {
+    localStorage.setItem(
+      "draft_newParcour",
+      JSON.stringify(currentParcour)
+    );
+    window.history.back();
+    return;
+  }
+
+  // ✏️ BESTEHENDER PARCOUR → Backend
+  if (context === "existing") {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      const response = await fetch(
+        `https://dein-backend-url/api/parcours/${parcourId}/animals`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(currentParcour.animals)
+        }
+      );
+
+      if (!response.ok) throw new Error("Fehler beim Löschen");
+
+      alert("Tier erfolgreich entfernt");
       window.history.back();
-    } else {
-      // Fallback, falls Seite direkt geöffnet wurde
-      window.location.href = "admin_main.html";
+    } catch (err) {
+      console.error(err);
+      alert("Fehler beim Entfernen des Tiers");
     }
-  });
+  }
+});
+
 
   noBtn.addEventListener("click", () => {
     overlay.style.display = "none";
@@ -108,8 +155,11 @@
 </script>
 <script>
 const urlParams = new URLSearchParams(window.location.search);
-const parcourId = urlParams.get("parcourId") || "new";
+
+const context = urlParams.get("context"); // "existing" | "new"
+const parcourId = urlParams.get("parcourId"); // nur bei existing relevant
 const animalIndex = parseInt(urlParams.get("animalIndex"), 10);
+
 
 const nameInput = document.getElementById("animal-name");
 const saveBtn = document.getElementById("saveBtn");
@@ -138,18 +188,34 @@ for (let i = 1; i <= totalBoxes; i++) {
 }
 
 // 2️⃣ Parcour laden
-if (parcourId === "new") {
-  currentParcour = JSON.parse(localStorage.getItem("newParcour") || '{"animals":[]}');
-} else {
-  fetch(`https://dein-backend-url/api/parcours/${parcourId}`, {
-    headers: { "Authorization": `Bearer ${localStorage.getItem("authToken")}` }
-  })
-  .then(res => res.json())
-  .then(data => {
-    currentParcour = data;
-    loadAnimal();
-  });
+if (context === "new") {
+  currentParcour = JSON.parse(
+    localStorage.getItem("draft_newParcour") || '{"animals":[]}'
+  );
+
+  loadAnimal();
+
+  // 🛡️ Delete-Button nur anzeigen, wenn Tier existiert
+    if (currentParcour.animals.length <= 1) {
+      deleteBtn.style.display = "none";
+    }
 }
+
+
+if (context === "existing") {
+  // ✏️ Bestehender Parcour → Backend
+  fetch(`https://dein-backend-url/api/parcours/${parcourId}`, {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+    }
+  })
+    .then(res => res.json())
+    .then(data => {
+      currentParcour = data;
+      loadAnimal();
+    });
+}
+
 
 // 3️⃣ Tierdaten laden
 function loadAnimal() {
@@ -205,10 +271,15 @@ saveBtn.addEventListener("click", async () => {
     currentParcour.animals[animalIndex] = animalData;
   }
 
-  if (parcourId === "new") {
-    localStorage.setItem("newParcour", JSON.stringify(currentParcour));
-    window.history.back();
-  } else {
+if (context === "new") {
+  // 🆕 Nur Draft speichern
+  localStorage.setItem(
+    "draft_newParcour",
+    JSON.stringify(currentParcour)
+  );
+  window.history.back();
+  return;
+} else {
     try {
       const token = localStorage.getItem("authToken");
       const response = await fetch(`https://dein-backend-url/api/parcours/${parcourId}/animals`, {

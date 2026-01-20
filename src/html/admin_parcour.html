@@ -75,42 +75,42 @@
           <div class="non-collapse-top-admin">
             <span class="drag-handle">&#x2630;</span>
             <span class="animal-text">Löwe</span>
-            <a href="admin_animal.html?ParcourId=1&animalIndex=0"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
+            <a href="admin_animal.html?context=existing&parcourId=1&animalIndex=0"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
             <span class="drag-handle">&#x2630;</span>
             <span class="animal-text">Zebra</span>
-            <a href="admin_animal.html?ParcourId=1&animalIndex=1"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
+            <a href="admin_animal.html?context=existing&parcourId=1&animalIndex=1">><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
             <span class="drag-handle">&#x2630;</span>
             <span class="animal-text">Gazelle</span>
-            <a href="admin_animal.html?ParcourId=1&animalIndex=2"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
+            <a href="admin_animal.html?context=existing&parcourId=1&animalIndex=2"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
             <span class="drag-handle">&#x2630;</span>
             <span class="animal-text">Giraffe</span>
-            <a href="admin_animal.html?ParcourId=1&animalIndex=3"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
+            <a href="admin_animal.html?context=existing&parcourId=1&animalIndex=3"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
             <div class="non-collapse-admin">
             <span class="drag-handle">&#x2630;</span>
             <span class="animal-text">Gorilla</span>
-            <a href="admin_animal.html?ParcourId=1&animalIndex=4"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
+            <a href="admin_animal.html?context=existing&parcourId=1&animalIndex=4"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
             <span class="drag-handle">&#x2630;</span>
             <span class="animal-text">Braunbär</span>
-            <a href="admin_animal.html?ParcourId=1&animalIndex=5"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
+            <a href="admin_animal.html?context=existing&parcourId=1&animalIndex=5"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-admin">
             <span class="drag-handle">&#x2630;</span>
             <span class="animal-text">Geier</span>
-            <a href="admin_animal.html?ParcourId=1&animalIndex=6"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
+            <a href="admin_animal.html?context=existing&parcourId=1&animalIndex=6"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
           <div class="non-collapse-bottom-admin">
             <span class="drag-handle">&#x2630;</span>
             <span class="animal-text">Elch</span>
-            <a href="admin_animal.html?ParcourId=1&animalIndex=7"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
+            <a href="admin_animal.html?context=existing&parcourId=1&animalIndex=7"><img class="edit_png" src="../img/edit_square.png" alt="edit"></a>
           </div>
         </div>
         <button class="blue-btn-admin" id="saveBtn" style="float: right; margin: 10px;">
@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
     div.innerHTML = `
       <span class="drag-handle">&#x2630;</span>
       <span class="animal-text">${name}</span>
-      <a href="admin_animal.html?ParcourId=${parcourId}&animalIndex=${index}">
+      <a href="admin_animal.html?context=existing&parcourId=${parcourId}&animalIndex=${index}">
         <img class="edit_png" src="../img/edit_square.png" alt="edit">
       </a>
     `;
