@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const logoutLink = document.getElementById("logout-link");
 
-  const baseURL = "http://localhost:3000";
+  const baseURL = "http://localhost:5000";
 
   logoutLink.addEventListener("click", async (event) => {
     event.preventDefault(); // verhindert sofortige Navigation
