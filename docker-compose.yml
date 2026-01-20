@@ -1,6 +1,6 @@
 services:
   archerly-frontend:
-    image: httpd:latest
+    build: ./apache
     container_name: archerly-frontend
     ports:
       - "3000:80"   # Expose port 80 of container to 3000 on host
