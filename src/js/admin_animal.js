@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const context = urlParams.get("context"); // "existing" | "new"
   const parcourId = urlParams.get("parcourId");
   const animalIndex = parseInt(urlParams.get("animalIndex"), 10);
-  const baseURL = "https://localhost:5000";
+  const baseURL = "http://localhost:5000";
 
   // 🔹 DOM-Elemente
   const deleteBtn = document.getElementById("deleteBtn");

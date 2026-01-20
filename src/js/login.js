@@ -42,14 +42,14 @@ document.addEventListener("DOMContentLoaded", () => {
       // =========================
       // JWT + USER SPEICHERN
       // =========================
-      localStorage.setItem("jwt", data.token);
-      localStorage.setItem("userId", data.user.id);
-      localStorage.setItem("isAdmin", data.user.isAdmin);
+      localStorage.setItem("jwt", data.jwt);
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("isAdmin", data.isAdmin);
 
       // =========================
       // WEITERLEITUNG
       // =========================
-      if (data.user.isAdmin) {
+      if (data.isAdmin) {
         window.location.href = "admin_main.html";
       } else {
         window.location.href = "index.html";
