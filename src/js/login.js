@@ -1,4 +1,4 @@
-const baseURL = "http://localhost:3000"; // anpassen
+const baseURL = "http://localhost:5000"; // anpassen
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");

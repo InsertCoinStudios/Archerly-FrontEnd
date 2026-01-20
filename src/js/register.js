@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
 
-  const baseURL = "http://localhost:3000"; // anpassen
+  const baseURL = "http://localhost:5000"; // anpassen
   const form = $('#myForm');
 
   form.validate({
