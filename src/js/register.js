@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+
+  const baseURL = "http://localhost:3000"; // anpassen
   const form = $('#myForm');
 
   form.validate({
@@ -46,7 +48,7 @@ $(document).ready(function () {
       };
 
       $.ajax({
-        url: "https://dein-backend/api/register",
+        url: `${baseURL}/register`,
         method: "POST",
         contentType: "application/json",
         data: JSON.stringify(payload),

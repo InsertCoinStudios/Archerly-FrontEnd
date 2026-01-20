@@ -1,61 +1,78 @@
-const baseURL = 'https://your-backend-url/';
-
 document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        // Request ans Backend für Statistikdaten des angemeldeten Users
-        const response = await fetch(baseURL + "api/userstats", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                // optional: Token / Auth falls nötig
-                "Authorization": "Bearer " + localStorage.getItem("token")
-            }
-        });
+  // Token aus LocalStorage holen
+  const jwt = localStorage.getItem("jwt");
+  if (!jwt) {
+    alert("Nicht angemeldet!");
+    window.location.href = "login.html";
+    return;
+  }
 
-        if (!response.ok) throw new Error("Fehler beim Laden der Statistik");
+  try {
+    // 1. Daten vom Backend holen
+    const response = await fetch("http://localhost:3000/allTimeStats", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${jwt}`
+      }
+    });
 
-        const data = await response.json();
-
-        /* Erwartetes Backend-JSON:
-        {
-            totalRounds: 12,
-            totalShots: 150,
-            totalScore: 1200,
-            favoriteRatingType: "Gold"
-        }
-        */
-
-        // Chart.js Setup
-        const ctx = document.getElementById("userStatsChart").getContext("2d");
-
-        const chartData = {
-            labels: [
-                "Gesamtanzahl gespielter Runden",
-                "Gesamtanzahl an Schüssen",
-                "Gesamtpunkteanzahl",
-                `Bevorzugte Pfeilbewertung: ${data.favoriteRatingType}`
-            ],
-            datasets: [{
-                data: [data.totalRounds, data.totalShots, data.totalScore, 1], // 1 für Lieblingsbewertung, nur um Slice anzuzeigen
-                backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#8BC34A"]
-            }]
-        };
-
-        const userStatsChart = new Chart(ctx, {
-            type: 'pie',
-            data: chartData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-
-    } catch (err) {
-        console.error(err);
-        alert("Fehler beim Laden der Statistikdaten");
+    if (!response.ok) {
+      throw new Error(`Fehler beim Laden der Statistik: ${response.status}`);
     }
+
+    const data = await response.json();
+
+    // 2. Daten extrahieren
+    const totalShots = data.shots.length;
+    const misses = data.miss; // assuming miss ist eine Zahl oder Array
+    const kills = data.kill;  // assuming kill ist eine Zahl
+
+    // Falls miss ein Array ist, Länge nehmen
+    const totalMisses = Array.isArray(misses) ? misses.length : misses;
+    const totalKills = Array.isArray(kills) ? kills.length : kills;
+
+    // 3. Daten in die HTML-Elemente einfügen
+    const scoreElements = document.querySelectorAll(".user-score");
+    if (scoreElements.length >= 3) {
+      scoreElements[0].textContent = totalShots;    // Gesamtanzahl Schüsse
+      scoreElements[1].textContent = totalMisses;   // Verfehlte Schüsse
+      scoreElements[2].textContent = totalKills;    // Volltreffer
+    }
+
+    // 4. Chart aktualisieren
+    const chartDom = document.getElementById('performanceChart');
+    const myChart = echarts.init(chartDom);
+
+    const option = {
+      tooltip: { show: false },
+      color: ['#f399ac', '#ed2633', '#ef5a66'],
+      series: [
+        {
+          type: 'pie',
+          radius: '60%',
+          label: { show: true, position: 'inside' },
+          labelLine: { show: false },
+          data: [
+            { value: totalShots, name: 'Schüsse' },
+            { value: totalMisses, name: 'Verfehlte' },
+            { value: totalKills, name: 'Volltreffer' }
+          ],
+          emphasis: {
+            itemStyle: { shadowBlur: 0, shadowOffsetX: 0, shadowColor: 'transparent' }
+          }
+        }
+      ]
+    };
+
+    myChart.setOption(option);
+
+    window.addEventListener('resize', () => {
+      myChart.resize();
+    });
+
+  } catch (error) {
+    console.error(error);
+    alert("Fehler beim Laden der Statistik!");
+  }
 });

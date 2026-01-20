@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (hasError) return;
 
     try {
-      const res = await fetch(`${baseURL}/api/login`, {
+      const res = await fetch(`${baseURL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // =========================
       // JWT + USER SPEICHERN
       // =========================
-      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("jwt", data.token);
       localStorage.setItem("userId", data.user.id);
       localStorage.setItem("isAdmin", data.user.isAdmin);
 

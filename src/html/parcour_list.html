@@ -27,7 +27,7 @@
       <div class="content-top"><h1>Parkour - Liste</h1></div>
       <div class="content">
         <div class="table_users_pc">
-          <!-- SCHNAPPT SICH VOM BACKEND DIE PARCOURS UND LISTET DIESE AUF-->
+          <!--
           <button type="button" class="collapsible">
             <span class="pc-left">
               <span class="pc-dot easy"></span>
@@ -100,6 +100,7 @@
                 </button>
               </div>
           </div>
+          -->
         </div>
       </div>
       <div class="semi-footer">
@@ -136,15 +137,5 @@
       </div>
     </div>
     <script src="../js/collapse.js"></script>
-<script>
-document.querySelectorAll(".select-parcour-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const parcourName = btn.getAttribute("data-name");
-    localStorage.setItem("selectedParcour", parcourName);
-    window.location.href = "rating_choice.html";
-  });
-});
-</script>
-
   </body>
 </html>
