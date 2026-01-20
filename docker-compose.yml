@@ -1,0 +1,17 @@
+services:
+  archerly-frontend:
+    build: ./apache
+    container_name: archerly-frontend
+    ports:
+      - "3001:80"   # Expose port 80 of container to 3000 on host
+    volumes:
+      - ./src:/usr/local/apache2/htdocs/
+    #environment:
+      # You can inject API URL for your JS app via env substitution if needed
+      # Example: REACT_APP_API_URL=http://archerly-api:5000
+    networks:
+      - shared-monitoring
+
+networks:
+  shared-monitoring:
+    external: true
