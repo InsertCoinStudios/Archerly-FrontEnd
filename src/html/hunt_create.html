@@ -1,85 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="../css/style.css">
-  </head>
-  <body>
-    <div class="header-bg">
-          <img src="../img/return.png" class="header-img" id="returnBtn">
-    </div>
-    <div class="bg-wrapper">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <div class="header-bg">
+    <img src="../img/return.png" class="header-img" id="returnBtn">
+  </div>
+  <div class="bg-wrapper">
     <div class="bg-dark">
     </div>
     <div class="bg-wrapper-2">
-    <div class="bg-light">
+      <div class="bg-light">
 
+      </div>
     </div>
-    </div>
-    </div>
-    <div class="container">
-      <div class="bg-wrapper-header">
+  </div>
+  <div class="container">
+    <div class="bg-wrapper-header">
       <div class="header" style="margin-bottom: -10px;">
         <h1>Jagd erstellen</h1>
       </div>
+    </div>
+    <div class="content">
+      <div class="session-box_create">
+        <div class="session-box-in_create">
+          <h4>SESSION-ID:<br><br></h4>
+          <h4 id="s-id">#1234 <img src="../img/copy.svg" onclick="copySessionID()"></h4>
+          <!-- DYNAMISCHER WERT NICHT HARD GECODED WIE HIER-->
+        </div>
       </div>
-        <div class="content">
-          <div class="session-box_create">
-            <div class="session-box-in_create">
-              <h4>SESSION-ID:<br><br></h4>
-              <h4 id="s-id">#1234 <img src="../img/copy.svg" onclick="copySessionID()"></h4>
-              <!-- DYNAMISCHER WERT NICHT HARD GECODED WIE HIER-->
-            </div>
-          </div>
-        <div class="table_users_queue">
-          <!-- DYNAMISCHE ANPASSUNG: USERNAMEN, USERANZAHL -->
-          <div class="non-collapse-top_queue">
-            <p>User 1</p>
-          </div>
-          <div class="non-collapse_queue">
-            <p>User 2</p>
-          </div>
-          <div class="non-collapse_queue">
-            <p>User 3</p>
-          </div>
-          <div class="non-collapse_queue">
-            <p>User 4</p>
-          </div>
-          <div class="non-collapse_queue">
-            <p>User 5</p>
-          </div>
-          <div class="non-collapse_queue">
-            <p>User 6</p>
-          </div>
-          <div class="non-collapse_queue">
-            <p>User 7</p>
-          </div>
-          <div class="non-collapse-bottom_queue">
-            <p>User 8</p>
-          </div>
+      <div class="table_users_queue">
+        <!-- DYNAMISCHE ANPASSUNG: USERNAMEN, USERANZAHL -->
+        <div class="non-collapse-top_queue">
+          <p>User 1</p>
         </div>
+        <div class="non-collapse_queue">
+          <p>User 2</p>
         </div>
-      <div class="footer">
-        <h5 style="color: #4f4e4e; margin-top: -10px;">
-          Teilnehmer Anzahl:<br>8
-        </h5>
-        <a href="parcour_list.html">
-          <button class="blue-btn">Weiter</button>
-        </a>
+        <div class="non-collapse_queue">
+          <p>User 3</p>
+        </div>
+        <div class="non-collapse_queue">
+          <p>User 4</p>
+        </div>
+        <div class="non-collapse_queue">
+          <p>User 5</p>
+        </div>
+        <div class="non-collapse_queue">
+          <p>User 6</p>
+        </div>
+        <div class="non-collapse_queue">
+          <p>User 7</p>
+        </div>
+        <div class="non-collapse-bottom_queue">
+          <p>User 8</p>
+        </div>
       </div>
     </div>
-<div id="leaveOverlay">
-  <div id="leaveModal">
-    <h3><strong>Möchtest du diese<br>Jagd auflösen?</strong></h3>
-
-    <div class="leave-actions">
-      <button id="leaveYes">Ja</button>
-      <button id="leaveNo">Nein</button>
+    <div class="footer">
+      <h5 style="color: #4f4e4e; margin-top: -10px;" id="sessionPlayerCount">
+        Teilnehmer Anzahl:<br>8
+      </h5>
+      <a href="parcour_list.html">
+        <button class="blue-btn">Weiter</button>
+      </a>
     </div>
   </div>
-</div>
-<script src="../js/hunt_create.js"></script>
-  </body>
+  <div id="leaveOverlay">
+    <div id="leaveModal">
+      <h3><strong>Möchtest du diese<br>Jagd auflösen?</strong></h3>
+
+      <div class="leave-actions">
+        <button id="leaveYes">Ja</button>
+        <button id="leaveNo">Nein</button>
+      </div>
+    </div>
+  </div>
+  <script src="../js/hunt_create.js"></script>
+</body>
+
 </html>
