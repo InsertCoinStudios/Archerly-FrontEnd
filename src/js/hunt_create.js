@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(() => alert("Fehler beim Kopieren der Session-ID"));
   };
 
+  localStorage.setItem("joinedSessionId", huntData.sessionId); //Damit hunt_final korrekt läuft und statistik korrekt anzeigt
   // =========================
   // Live-Update Spielerliste
   // =========================
@@ -91,18 +92,17 @@ document.addEventListener("DOMContentLoaded", () => {
   yesBtn.addEventListener("click", async () => {
     // Owner löscht die Hunt
     try {
-      const response = await fetch(`${baseURL}/hunts/${huntData.sessionId}`, {
-        method: "DELETE",
+      const response = await fetch(`${baseURL}/hunts/${huntData.sessionId}/leave`, {
+        method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${jwt}` }
       });
-      if (!response.ok) throw new Error("Fehler beim Auflösen der Jagd");
-
       clearInterval(liveInterval);
       localStorage.removeItem("currentHunt");
       window.location.href = "index.html";
     } catch (err) {
       console.error(err);
-      alert("Fehler beim Auflösen der Jagd.");
+      //alert("Fehler beim Auflösen der Jagd.");
+      window.location.href = "index.html";
     }
   });
 

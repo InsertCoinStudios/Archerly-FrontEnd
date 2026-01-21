@@ -1,6 +1,14 @@
 const baseURL = "http://localhost:5000"; // anpassen
 
 document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("pageshow", (event) => {
+  localStorage.removeItem("jwt");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("isAdmin");
+  localStorage.removeItem("joinedSessionId");
+});
+
+
   const form = document.getElementById("loginForm");
 
   form.addEventListener("submit", async (e) => {
