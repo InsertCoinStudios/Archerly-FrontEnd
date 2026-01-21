@@ -1,19 +1,65 @@
+// =========================
+// LOAD AUS BACKEND
+// =========================
+async function fetchParcourFromBackend() {
+  try {
+    const res = await fetch(`${baseURL}/courses/${parcourId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${jwt}`
+      }
+    });
+
+    if (!res.ok) throw new Error("Fehler beim Laden");
+
+    const data = await res.json();
+    const course = data.course;
+
+
+    return course;
+
+  } catch (err) {
+    console.error(err);
+    alert("Parcour konnte nicht geladen werden!");
+  }
+}
+
+async function updateValuesWithParcourData(course) {
+
+  nameInput.value = course.name;
+  locInput.value = course.location;
+  infoInput.value = course.info;
+
+  const r = document.querySelector(`input[value="${course.difficulty}"]`);
+  if (r) r.checked = true;
+
+  animalList.innerHTML = "";
+  course.animals.forEach((a, i) =>
+    animalList.appendChild(createAnimalRow(a.name, i, a.id, a.imageUrl))
+  );
+
+  refreshRowClasses();
+  validateSave();
+}
+
+// =========================
+// URL PARAM
+// =========================
+const urlParams = new URLSearchParams(window.location.search);
+const parcourId = urlParams.get("ParcourId");
+if (!parcourId) {
+  alert("Kein Parcour ausgewählt!");
+  window.location.href = "admin_main.html";
+}
+const baseURL = "http://localhost:5000"; // z.B. https://api.meineseite.ch
+const jwt = localStorage.getItem("jwt"); // oder wo du ihn speicherst
+
+let savedParcour = fetchParcourFromBackend() || {};
+
 document.addEventListener("DOMContentLoaded", () => {
 
-  // =========================
-  // URL PARAM
-  // =========================
-  const urlParams = new URLSearchParams(window.location.search);
-  const parcourId = urlParams.get("ParcourId");
-  const baseURL = "https://DEIN-BACKEND-URL"; // z.B. https://api.meineseite.ch
-  const jwt = localStorage.getItem("jwt"); // oder wo du ihn speicherst
 
 
-  if (!parcourId) {
-    alert("Kein Parcour ausgewählt!");
-    window.location.href = "admin_main.html";
-    return;
-  }
 
   // =========================
   // BASIS ELEMENTE
@@ -62,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       refreshRowClasses();
       validateSave();
+      return course;
 
     } catch (err) {
       console.error(err);
@@ -194,13 +241,13 @@ document.addEventListener("DOMContentLoaded", () => {
     onEnd: refreshRowClasses
   });
 
-    deleteBtn.addEventListener("click", () => {
+  deleteBtn.addEventListener("click", () => {
     leaveOverlay.style.display = "flex";
-    });
+  });
 
-    leaveNo.addEventListener("click", () => {
+  leaveNo.addEventListener("click", () => {
     leaveOverlay.style.display = "none";
-    });
+  });
 
   function collectAnimalsForApi() {
     return [...animalList.children].map(row => ({
@@ -213,82 +260,83 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
   // SAVE
   // =========================
-saveBtn.addEventListener("click", async () => {
-  const animals = collectAnimalsForApi();
+  saveBtn.addEventListener("click", async () => {
+    const animals = collectAnimalsForApi();
 
-  if (animals.some(a => a.Name.toLowerCase() === "tier")) {
-    alert("Bitte alle Tiere benennen!");
-    return;
-  }
-
-  const body = {
-    Course: {
-      Name: nameInput.value.trim(),
-      Location: locInput.value.trim(),
-      Difficulty: [...difficultyRadios].find(r => r.checked)?.value,
-      Info: infoInput.value.trim(),
-      Animals: animals
+    if (animals.some(a => a.Name.toLowerCase() === "tier")) {
+      alert("Bitte alle Tiere benennen!");
+      return;
     }
-  };
 
-  try {
-    const res = await fetch(`${baseURL}/courses/${parcourId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwt}`
-      },
-      body: JSON.stringify(body)
-    });
+    const body = {
+      Course: {
+        Name: nameInput.value.trim(),
+        Location: locInput.value.trim(),
+        Difficulty: [...difficultyRadios].find(r => r.checked)?.value,
+        Info: infoInput.value.trim(),
+        Animals: animals
+      }
+    };
 
-    if (!res.ok) throw new Error("Update fehlgeschlagen");
+    try {
+      const res = await fetch(`${baseURL}/courses/${parcourId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwt}`
+        },
+        body: JSON.stringify(body)
+      });
 
-    const newId = await res.text(); // dein Backend gibt eine ID zurück
-    console.log("Updated course:", newId);
+      if (!res.ok) throw new Error("Update fehlgeschlagen");
 
-    alert("✅ Parcour wurde erfolgreich aktualisiert!");
+      const newId = await res.text(); // dein Backend gibt eine ID zurück
+      console.log("Updated course:", newId);
 
-  } catch (err) {
-    console.error(err);
-    alert("❌ Speichern fehlgeschlagen!");
-  }
-});
+      //TODO: remove alert
+      alert("✅ Parcour wurde erfolgreich aktualisiert!");
+
+    } catch (err) {
+      console.error(err);
+      alert("❌ Speichern fehlgeschlagen!");
+    }
+  });
 
   // =========================
   // DELETE
   // =========================
 
   leaveYes.addEventListener("click", async () => {
-  try {
-    const res = await fetch(`${baseURL}/courses/${parcourId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwt}`
+    try {
+      const res = await fetch(`${baseURL}/courses/${parcourId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwt}`
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error("Serverfehler beim Löschen");
       }
-    });
 
-    if (!res.ok) {
-      throw new Error("Serverfehler beim Löschen");
+      // optional: localStorage aufräumen
+      localStorage.removeItem("parcours_" + parcourId);
+
+      alert("🗑 Parcour wurde gelöscht!");
+      window.location.href = "admin_main.html";
+
+    } catch (err) {
+      console.error(err);
+      alert("❌ Löschen fehlgeschlagen!");
     }
-
-    // optional: localStorage aufräumen
-    localStorage.removeItem("parcours_" + parcourId);
-
-    alert("🗑 Parcour wurde gelöscht!");
-    window.location.href = "admin_main.html";
-
-  } catch (err) {
-    console.error(err);
-    alert("❌ Löschen fehlgeschlagen!");
-  }
-});
+  });
 
 
   // =========================
   // INIT
   // =========================
-  loadParcourFromBackend();
+  savedParcour = loadParcourFromBackend() || {};
   refreshRowClasses();
   validateSave();
 });
