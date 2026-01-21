@@ -105,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Leave Hunt beim Tab-/Fenster-Schließen
   // =========================
   async function leaveHunt() {
+    console.log("WIR RUFEN GERADE LEAVE AUF!!! hunt_create.js");
     if (!huntData.sessionId) return;
     try {
       await fetch(`${baseURL}/hunts/${huntData.sessionId}/leave`, {

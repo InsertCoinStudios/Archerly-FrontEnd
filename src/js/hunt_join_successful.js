@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Funktion: Hunt verlassen
   // =========================
   async function leaveHunt() {
+    console.log("WIR RUFEN GERADE LEAVE AUF!!! hunt_join_successful.js");
     try {
       await fetch(`${baseURL}/hunts/${sessionId}/leave`, {
         method: "POST",
