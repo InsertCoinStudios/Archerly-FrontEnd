@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const createBtn = document.getElementById("createHuntBtn");
-  const baseURL = "http:localhost:5000";
+  const baseURL = "http://localhost:5000";
 
   createBtn.addEventListener("click", async () => {
     try {

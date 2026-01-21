@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <h5>Ort: ${course.location}</h5><br>
         <h5>Zusatz: ${course.info || "-"}</h5><br>
         <div style="text-align: right;">
-          <button class="blue-parcour-btn select-parcour-btn" data-name="${course.name}" style="justify-self: right; margin-bottom: 15px;">
+          <button class="blue-parcour-btn select-parcour-btn" data-name="${course.name}" data-id="${course.id}"style="justify-self: right; margin-bottom: 15px;">
             Parkour auswählen
           </button>
         </div>
@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 document.querySelectorAll(".select-parcour-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
     const parcourName = btn.getAttribute("data-name");
+    const parcourId = btn.getAttribute("data-id");
     
     // Hunt-Daten aus localStorage
     const huntData = JSON.parse(localStorage.getItem("currentHunt") || "{}");
@@ -88,7 +89,7 @@ document.querySelectorAll(".select-parcour-btn").forEach(btn => {
     }
 
     // Suche den CourseId anhand des Namens
-    const selectedCourse = courses.find(c => c.name === parcourName);
+    const selectedCourse = courses.find(c => c.id === parcourId);
     if (!selectedCourse) {
       alert("Fehler: Parcours nicht gefunden");
       return;
@@ -96,6 +97,9 @@ document.querySelectorAll(".select-parcour-btn").forEach(btn => {
     const courseId = selectedCourse.id;
 
     try {
+        console.log(courseId);
+        console.log(JSON.stringify({ courseId }));
+
       // === SET COURSE Endpoint ===
       const res = await fetch(`${baseURL}/hunts/${huntId}/course`, {
         method: "POST",
@@ -105,13 +109,20 @@ document.querySelectorAll(".select-parcour-btn").forEach(btn => {
         },
         body: JSON.stringify({ courseId })
       });
-      if (!res.ok) throw new Error("Fehler beim Setzen des Parcours");
+    if (!res.ok) {
+      const text = await res.text(); // oder res.json(), wenn dein Backend JSON-Errors schickt
+      console.error("HTTP STATUS:", res.status);
+      console.error("STATUS TEXT:", res.statusText);
+      console.error("BACKEND RESPONSE:", text);
+      throw new Error(`Backend-Fehler: ${res.status}`);
+}
+
 
       // Optional: Bestätigung
       console.log(`Parcours ${parcourName} gesetzt`);
 
       // Speichern für Frontend
-      localStorage.setItem("selectedParcour", parcourName);
+      localStorage.setItem("selectedParcour", parcourId);
 
       // Weiterleitung
       window.location.href = "rating_choice.html";

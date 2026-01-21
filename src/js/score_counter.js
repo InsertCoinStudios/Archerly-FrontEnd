@@ -2,7 +2,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const baseURL = "http://localhost:5000";
   const jwt = localStorage.getItem("jwt");
-  const huntData = JSON.parse(localStorage.getItem("currentHunt") || "{}");
+  const raw = localStorage.getItem("currentHunt");
+
+
+if (!raw) {
+  console.error("currentHunt ist leer oder noch nicht gesetzt");
+  alert("Hunt-Daten fehlen – bitte neu starten");
+  return;
+}
+
+  console.log("TYPE:", typeof raw);
+  console.log("LENGTH:", raw?.length);
+  console.log("RAW STRING:", raw);
+  console.log("CHARS:", [...raw].map(c => c.charCodeAt(0)));
+
+  const huntData = JSON.parse(raw);
+  console.log("check huntData (stringified):", JSON.stringify(huntData, null, 2));
+
   const huntId = huntData.sessionId;
 
   if (!huntId || !jwt) {
@@ -31,34 +47,74 @@ document.addEventListener("DOMContentLoaded", async () => {
      BACKEND LADEN
   ===================== */
 
-  async function loadHunt() {
-    const res = await fetch(`${baseURL}/hunts/${huntId}`, {
-      headers: { Authorization: `Bearer ${jwt}` }
-    });
-    if (!res.ok) throw new Error("Hunt konnte nicht geladen werden");
-    return res.json();
+async function loadHunt(huntId) {
+  const res = await fetch(`${baseURL}/hunts/${huntId}`, {
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${jwt}` }
+  });
+
+  const text = await res.text();
+  console.log("Backend RAW text:", text);
+   // zuerst als Text holen
+  if (!text) { // leerer Body
+    console.error("Backend hat keine Hunt-Daten zurückgegeben");
+    throw new Error("Hunt konnte nicht geladen werden (leerer Response-Body)");
   }
 
-  async function loadParcour(parcourId) {
-    const res = await fetch(`${baseURL}/parcours/${parcourId}`, {
-      headers: { Authorization: `Bearer ${jwt}` }
-    });
-    if (!res.ok) throw new Error("Parcour konnte nicht geladen werden");
-    return res.json();
+  try {
+    const data = JSON.parse(text);
+    console.log("Backend PARSED data:", data); // jetzt sicher parsen
+    if (!res.ok) {
+      console.error("Backend Fehler:", res.status, res.statusText, data);
+      throw new Error(`Hunt konnte nicht geladen werden (HTTP ${res.status})`);
+    }
+    return data;
+  } catch (e) {
+    console.error("Ungültiges JSON vom Backend:", text);
+    throw e;
+  }
+}
+
+  const parcourId = localStorage.getItem("selectedParcour");
+
+
+async function loadParcour(parcourId) {
+  const res = await fetch(`${baseURL}/courses/${parcourId}`, {
+    headers: { Authorization: `Bearer ${jwt}` }
+  });
+
+  const text = await res.text();
+  if (!text) {
+    console.error("Backend hat keine Parcour-Daten zurückgegeben");
+    throw new Error("Parcour konnte nicht geladen werden (leerer Response-Body)");
   }
 
-  const hunt = await loadHunt();
-  const parcour = await loadParcour(hunt.parcourId);
+  try {
+    const data = JSON.parse(text);
+    if (!res.ok) {
+      console.error("Backend Fehler:", res.status, res.statusText, data);
+      throw new Error(`Parcour konnte nicht geladen werden (HTTP ${res.status})`);
+    }
+    return data;
+  } catch (e) {
+    console.error("Ungültiges JSON vom Backend:", text);
+    throw e;
+  }
+}
+
+  const hunt = await loadHunt(huntId);
+  const courseData = await loadParcour(parcourId);
 
   /* =====================
      DATEN ÜBERNEHMEN
   ===================== */
 
   ratingMode = hunt.shotVariant === 2 ? "Zweipfeil" : "Dreipfeil";
-  TOTAL_ANIMALS = parcour.animals.length;
-  ANIMALS = parcour.animals;
+  TOTAL_ANIMALS = courseData.course?.animals.length;
+  ANIMALS = courseData.course?.animals;
 
-  parcourNameEl.textContent = parcour.name;
+  parcourNameEl.textContent = courseData.course.name;
   totalPlayersEl.textContent = hunt.playerCount;
 
   /* =====================
@@ -127,43 +183,78 @@ document.addEventListener("DOMContentLoaded", async () => {
      KLICKS
   ===================== */
 
-  pointBoxes.forEach(box => {
-    box.addEventListener("click", () => {
-      if (shotLocked) return;
-      shotLocked = true;
+async function updateRank() {
+  try {
+    const res = await fetch(`${baseURL}/hunts/${huntId}/userstats`, {
+      headers: { Authorization: `Bearer ${jwt}` }
+    });
 
-      const value = box.dataset.value;
+    if (!res.ok) {
+      console.error("Fehler beim Laden der User-Stats:", res.status, res.statusText);
+      return;
+    }
+    const text = await res.clone().text(); // clone() weil res nur einmal gelesen werden kann
+    console.log("updateRank Response Text:", text);
 
-      if (!results[currentAnimal - 1]) {
-        results[currentAnimal - 1] = { animal: currentAnimal, shots: [] };
-      }
+    const data = await res.json();
 
-      results[currentAnimal - 1].shots.push(value);
-      if (value !== "MISS") totalScore += Number(value);
+    console.log("updateRank Data (stringified):", JSON.stringify(data, null, 2));
 
-      currentShot++;
+    // Rang dynamisch setzen
+    console.log(data.stats?.rank + "current Rank");
+    rankEl.textContent = data.stats?.rank ?? "-";
+    // Gesamtanzahl der Spieler aus localStorage
+    console.log("hunt (stringified):", JSON.stringify(hunt, null, 2));
 
-      if (ratingMode === "Zweipfeil" && currentShot === config.shotsPerAnimal) {
+    totalPlayersEl.textContent = hunt.playerCount ?? "-";
+
+  } catch (err) {
+    console.error("Fehler beim Abrufen der User-Stats:", err);
+  }
+}
+
+
+pointBoxes.forEach(box => {
+  box.addEventListener("click", async () => {
+    if (shotLocked) return;
+    shotLocked = true;
+
+    const value = box.dataset.value;
+
+    if (!results[currentAnimal - 1]) {
+      results[currentAnimal - 1] = { animal: currentAnimal, shots: [] };
+    }
+
+    results[currentAnimal - 1].shots.push(value);
+    if (value !== "MISS") totalScore += Number(value);
+
+    currentShot++;
+
+    if (ratingMode === "Zweipfeil" && currentShot === config.shotsPerAnimal) {
+      nextAnimal();
+    }
+
+    if (ratingMode === "Dreipfeil") {
+      if (value !== "MISS" || currentShot === config.shotsPerAnimal) {
         nextAnimal();
       }
+    }
 
-      if (ratingMode === "Dreipfeil") {
-        if (value !== "MISS" || currentShot === config.shotsPerAnimal) {
-          nextAnimal();
-        }
-      }
+    renderPoints();
+    updateFooter();
 
-      renderPoints();
-      updateFooter();
+    // 🔥 Hier den Rang updaten
+    await updateRank();
 
-      setTimeout(() => (shotLocked = false), 50);
-    });
+    setTimeout(() => (shotLocked = false), 50);
   });
+});
+
 
   /* =====================
      START
   ===================== */
-
+  updateRank();
   renderAnimal();
   renderPoints();
   updateFooter();
