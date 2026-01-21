@@ -19,8 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Parcour-Name aus LocalStorage
-  const selectedParcour = localStorage.getItem("selectedParcour");
-  popupParcourName.textContent = selectedParcour || "Unbekannt";
+  const selectedParcourName = localStorage.getItem("selectedParcourName");
+  popupParcourName.textContent = selectedParcourName || "Unbekannt";
 
   let selectedMode = null;
 

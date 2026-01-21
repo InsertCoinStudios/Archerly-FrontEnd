@@ -110,7 +110,15 @@ async function loadParcour(parcourId) {
      DATEN ÜBERNEHMEN
   ===================== */
 
-  ratingMode = hunt.shotVariant === 2 ? "Zweipfeil" : "Dreipfeil";
+  const variant = Number(hunt.shotVariant);
+
+if (variant === 2) ratingMode = "Zweipfeil";
+else if (variant === 3) ratingMode = "Dreipfeil";
+else {
+  console.error("Ungültiger shotVariant vom Backend:", hunt.shotVariant);
+  ratingMode = localStorage.getItem("ratingMode") || "Zweipfeil";
+}
+
   TOTAL_ANIMALS = courseData.course?.animals.length;
   ANIMALS = courseData.course?.animals;
 
@@ -177,11 +185,40 @@ async function loadParcour(parcourId) {
     currentAnimal++;
     currentShot = 0;
     renderAnimal();
+    renderPoints();
+    updateFooter();
   }
 
   /* =====================
      KLICKS
   ===================== */
+
+async function registerShot(animalId, shotCount, points) {
+  try {
+    const res = await fetch(
+      `${baseURL}/hunts/${huntId}/animals/${animalId}/shot/${shotCount}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwt}`
+        },
+        body: JSON.stringify({ pointsScored: points })
+      }
+    );
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("SHOT ERROR:", res.status, text);
+      throw new Error("Shot konnte nicht gespeichert werden");
+    }
+
+    console.log(`SHOT OK → Animal ${animalId}, Shot ${shotCount}, Points ${points}`);
+  } catch (err) {
+    console.error("REGISTER SHOT FAILED:", err);
+  }
+}
+
 
 async function updateRank() {
   try {
@@ -220,13 +257,22 @@ pointBoxes.forEach(box => {
     shotLocked = true;
 
     const value = box.dataset.value;
+    const points = value === "MISS" ? 0 : Number(value);
+
+    const animal = ANIMALS[currentAnimal - 1];
+    const animalId = animal.id;
+
+    const shotCount = currentShot + 1; // Backend ist 1-basiert
+
+    // 🔥 BACKEND
+    await registerShot(animalId, shotCount, points);
 
     if (!results[currentAnimal - 1]) {
       results[currentAnimal - 1] = { animal: currentAnimal, shots: [] };
     }
 
     results[currentAnimal - 1].shots.push(value);
-    if (value !== "MISS") totalScore += Number(value);
+    if (points > 0) totalScore += points;
 
     currentShot++;
 
@@ -242,13 +288,12 @@ pointBoxes.forEach(box => {
 
     renderPoints();
     updateFooter();
-
-    // 🔥 Hier den Rang updaten
     await updateRank();
 
     setTimeout(() => (shotLocked = false), 50);
   });
 });
+
 
 
   /* =====================

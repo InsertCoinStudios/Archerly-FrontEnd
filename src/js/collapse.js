@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <h5>Ort: ${course.location}</h5><br>
         <h5>Zusatz: ${course.info || "-"}</h5><br>
         <div style="text-align: right;">
-          <button class="blue-parcour-btn select-parcour-btn" data-name="${course.name}" data-id="${course.id}"style="justify-self: right; margin-bottom: 15px;">
+          <button class="blue-parcour-btn select-parcour-btn" data-name="${course.name}" data-id="${course.id}" style="justify-self: right; margin-bottom: 15px;">
             Parkour auswählen
           </button>
         </div>
@@ -123,6 +123,7 @@ document.querySelectorAll(".select-parcour-btn").forEach(btn => {
 
       // Speichern für Frontend
       localStorage.setItem("selectedParcour", parcourId);
+      localStorage.setItem("selectedParcourName", parcourName);
 
       // Weiterleitung
       window.location.href = "rating_choice.html";
