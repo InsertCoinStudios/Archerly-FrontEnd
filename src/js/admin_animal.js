@@ -69,23 +69,37 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ===============================
   // 2️⃣ Parcour laden
   // ===============================
-  if (context === "new") {
-    currentParcour = JSON.parse(localStorage.getItem("draft_newParcour") || '{"animals":[]}');
-    loadAnimal();
-    if (currentParcour.animals.length <= 1 && deleteBtn) deleteBtn.style.display = "none";
-  } else if (context === "existing") {
-    try {
-      const res = await fetch(`${baseURL}/parcours/${parcourId}`, {
-        headers: { "Authorization": `Bearer ${jwt}` }
-      });
-      if (!res.ok) throw new Error("Fehler beim Laden des Parcours");
-      currentParcour = await res.json();
-      loadAnimal();
-    } catch (err) {
-      console.error(err);
-      alert("Fehler beim Laden des Parcours");
-    }
+if (context === "new") {
+  currentParcour = JSON.parse(
+    localStorage.getItem("draft_newParcour") || '{"animals":[]}'
+  );
+  loadAnimal();
+
+  if (currentParcour.animals.length <= 1 && deleteBtn) {
+    deleteBtn.style.display = "none";
   }
+
+} else if (context === "existing") {
+  try {
+    const res = await fetch(`${baseURL}/courses/${parcourId}`, {
+      headers: {
+        "Authorization": `Bearer ${jwt}`
+      }
+    });
+
+    if (!res.ok) throw new Error("Fehler beim Laden des Parcours");
+
+    const data = await res.json();
+    currentParcour = data.course;
+
+    loadAnimal();
+
+  } catch (err) {
+    console.error(err);
+    alert("Fehler beim Laden des Parcours");
+  }
+}
+
 
   // ===============================
   // 3️⃣ Tierdaten laden
@@ -148,7 +162,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       currentParcour.animals.splice(animalIndex, 1);
       if (context === "new") { localStorage.setItem("draft_newParcour", JSON.stringify(currentParcour)); return window.history.back(); }
       try {
-        const res = await fetch(`${baseURL}/parcours/${parcourId}/animals`, {
+        const res = await fetch(`${baseURL}/courses/${parcourId}/animals`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json", "Authorization": `Bearer ${jwt}` },
           body: JSON.stringify(currentParcour.animals)

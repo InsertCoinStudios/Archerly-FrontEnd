@@ -1,228 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="../css/style.css">
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Score Counter</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
 <div class="page-score">
-    <div class="header-bg-score">
-      <h1 id="score_counter-parcour-name">Safari - Route</h1>
+  <div class="header-bg-score">
+    <h1 id="score_counter-parcour-name">Lade Parcour...</h1>
 
-      <div class="score-container">
-        <span class="reg-score-text">Platz</span>
-        <span class="current-score">9</span>
-        <span class="reg-score-text">/12</span>
-      </div>
-              <span class="semi-circle"></span>
+    <div class="score-container">
+      <span class="reg-score-text">Platz</span>
+      <span class="current-score" id="current-rank">1</span>
+      <span class="reg-score-text">/<span id="total-players">1</span></span>
     </div>
+    <span class="semi-circle"></span>
+  </div>
 
-    <div class="bg-wrapper">
-    <div class="bg-dark">
-    </div>
+  <div class="bg-wrapper">
+    <div class="bg-dark"></div>
     <div class="bg-wrapper-2">
-    <div class="bg-light">
+      <div class="bg-light"></div>
+    </div>
+  </div>
 
-    </div>
-    </div>
-    </div>
-    <div class="container">
-      <div class="bg-wrapper-header">
+  <div class="container">
+    <div class="bg-wrapper-header">
       <div class="header">
         <div class="silhouette-box">
           <a href="hunt_finish.html">
-            <img src="https://images.phylopic.org/images/dd7c7bc6-2c6d-48e4-860b-02bf37886b5b/raster/1024x749.png?v=194926ddfd9" alt="Tier">
+            <img id="animal-image" src="" alt="Tier">
           </a>
         </div>
       </div>
-      </div>
-      <div class="content">
-          <div class="points-box">20</div>
-          <div class="points-box">18</div>
-          <div class="points-box">16</div>
-          <div class="points-box">&Chi; MISS &Chi;</div>
-      </div>
-      <div class="footer">
-        <div class="score_counter-footer" style="margin-top: -10px;">
-        <h4>Punkte: 20<br>
-        Tier: 1 von 24<br></h4>
-        </div>
-      </div>
     </div>
+
+    <div class="content" id="points-container">
+      <div class="points-box"></div>
+      <div class="points-box"></div>
+      <div class="points-box"></div>
+      <div class="points-box"></div>
+    </div>
+
+    <div class="footer">
+      <div class="score_counter-footer" id="score-footer"></div>
+    </div>
+  </div>
 </div>
-<script>
-console.group("RATING MODE DEBUG");
-console.log("localStorage.ratingMode =", localStorage.getItem("ratingMode"));
-console.groupEnd();
 
-/* =========================
-   1. KONFIGURATION
-========================= */
-
-const TOTAL_ANIMALS = 24;
-
-// Bewertung aus rating_choice.html
-// localStorage.setItem("ratingMode", "two" | "three")
-const ratingMode = localStorage.getItem("ratingMode") || "Zweipfeil";
-
-const RATING_CONFIG = {
-  Zweipfeil: {
-    shotsPerAnimal: 2,
-    pointsPerShot: [
-      [20, 18, 16, "MISS"],
-      [20, 18, 16, "MISS"]
-    ]
-  },
-  Dreipfeil: {
-    shotsPerAnimal: 3,
-    pointsPerShot: [
-      [20, 18, 16, "MISS"],
-      [16, 14, 12, "MISS"],
-      [10, 8, 6, "MISS"]
-    ]
-  }
-};
-
-const config = RATING_CONFIG[ratingMode];
-
-
-/* =========================
-   2. STATE
-========================= */
-
-let currentAnimal = 1;
-let currentShot = 0;
-let totalScore = 0;
-
-let results = []; // später fürs Backend
-
-
-/* =========================
-   3. DOM REFERENZEN
-========================= */
-
-const pointBoxes = document.querySelectorAll(".points-box");
-const footer = document.querySelector(".score_counter-footer");
-
-
-/* =========================
-   4. UI FUNKTIONEN
-========================= */
-
-function renderPoints() {
-  const points = config.pointsPerShot[currentShot];
-
-  pointBoxes.forEach((box, index) => {
-    box.textContent = points[index];
-    box.dataset.value = points[index];
-  });
-}
-
-function updateFooter() {
-  footer.innerHTML = `
-    <h4>
-      Punkte: ${totalScore}<br>
-      Tier: ${currentAnimal} von ${TOTAL_ANIMALS}<br>
-      ${currentShot + 1}. Schuss
-    </h4>
-  `;
-}
-
-function nextAnimal() {
-  if (currentAnimal >= TOTAL_ANIMALS) {
-    console.log("FERTIG", results, "Gesamt:", totalScore);
-
-    // optional: Ergebnisse für später speichern
-    localStorage.setItem("huntResults", JSON.stringify(results));
-    localStorage.setItem("totalScore", totalScore);
-
-    // kleine Verzögerung für UX
-    setTimeout(() => {
-      window.location.href = "hunt_finish.html";
-    }, 300);
-
-    return;
-  }
-
-  currentAnimal++;
-  currentShot = 0;
-}
-
-let shotLocked = false; // NEU: verhindert Mehrfachklicks pro Schuss
-
-
-/* =========================
-   5. KLICK-LOGIK
-========================= */
-
-pointBoxes.forEach(box => {
-  box.addEventListener("click", () => {
-
-    // 🔒 Wenn Schuss schon gemacht, nix tun
-    if (shotLocked) return;
-    shotLocked = true;
-
-    const value = box.dataset.value;
-
-    // Ergebnis-Objekt für aktuelles Tier vorbereiten
-    if (!results[currentAnimal - 1]) {
-      results[currentAnimal - 1] = {
-        animal: currentAnimal,
-        shots: []
-      };
-    }
-
-    results[currentAnimal - 1].shots.push(value);
-
-    if (value !== "MISS") {
-      totalScore += Number(value);
-    }
-
-    currentShot++;
-
-    // =========================
-    // ZWEIPFEIL-BEWERTUNG
-    // =========================
-    if (ratingMode === "Zweipfeil") {
-      if (currentShot === config.shotsPerAnimal) {
-        nextAnimal();
-      }
-    }
-
-    // =========================
-    // DREIPFEIL-BEWERTUNG
-    // =========================
-    if (ratingMode === "Dreipfeil") {
-      if (value !== "MISS" || currentShot === config.shotsPerAnimal) {
-        nextAnimal();
-      }
-    }
-
-    // UI aktualisieren
-    renderPoints();
-    updateFooter();
-
-    // 🔓 Reset für nächsten Schuss (nach kurzem Delay für UX)
-    setTimeout(() => {
-      shotLocked = false;
-    }, 50);
-
-  });
-});
-
-
-
-/* =========================
-   6. INITIALISIERUNG
-========================= */
-
-renderPoints();
-updateFooter();
-
-</script>
-
-
-  </body>
+<script src="../js/score_counter.js"></script>
+</body>
 </html>

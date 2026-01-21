@@ -72,11 +72,54 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Auswahl-Button Funktion
-  document.querySelectorAll(".select-parcour-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const parcourName = btn.getAttribute("data-name");
+// Auswahl-Button Funktion
+document.querySelectorAll(".select-parcour-btn").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    const parcourName = btn.getAttribute("data-name");
+    
+    // Hunt-Daten aus localStorage
+    const huntData = JSON.parse(localStorage.getItem("currentHunt") || "{}");
+    const huntId = huntData?.sessionId; // oder huntData.id, je nachdem wie dein Backend es erwartet
+    const jwt = localStorage.getItem("jwt");
+    
+    if (!huntId || !jwt) {
+      alert("Fehler: Keine Hunt-Daten oder Auth-Token vorhanden");
+      return;
+    }
+
+    // Suche den CourseId anhand des Namens
+    const selectedCourse = courses.find(c => c.name === parcourName);
+    if (!selectedCourse) {
+      alert("Fehler: Parcours nicht gefunden");
+      return;
+    }
+    const courseId = selectedCourse.id;
+
+    try {
+      // === SET COURSE Endpoint ===
+      const res = await fetch(`${baseURL}/hunts/${huntId}/course`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwt}`
+        },
+        body: JSON.stringify({ courseId })
+      });
+      if (!res.ok) throw new Error("Fehler beim Setzen des Parcours");
+
+      // Optional: Bestätigung
+      console.log(`Parcours ${parcourName} gesetzt`);
+
+      // Speichern für Frontend
       localStorage.setItem("selectedParcour", parcourName);
+
+      // Weiterleitung
       window.location.href = "rating_choice.html";
-    });
+
+    } catch (err) {
+      console.error(err);
+      alert("Fehler beim Setzen des Parcours. Bitte erneut versuchen.");
+    }
   });
+});
 });
