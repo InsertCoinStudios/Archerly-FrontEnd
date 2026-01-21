@@ -40,12 +40,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       queueContainer.appendChild(div);
     });
+    updatePlayerCount(players.length);
+  }
+
+  function updatePlayerCount(count) {
+    const playerCountEl = document.getElementById("sessionPlayerCount");
+    if (!playerCountEl) return;
+
+    playerCountEl.innerHTML = `Teilnehmer Anzahl:<br>${count}`;
   }
 
   // =========================
   // Session-ID kopieren
   // =========================
-  window.copySessionID = function() {
+  window.copySessionID = function () {
     const sessionId = huntData.sessionId;
     navigator.clipboard.writeText(sessionId)
       .then(() => alert("Session-ID kopiert!"))
@@ -64,8 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!res.ok) throw new Error("Fehler beim Abrufen der Spieler");
 
       const data = await res.json();
-      if (JSON.stringify(huntData.players) !== JSON.stringify(data.value.players)) {
-        huntData.players = data.value.players;
+      if (JSON.stringify(huntData.players) !== JSON.stringify(data.players)) {
+        huntData.players = data.players;
         renderPlayers(huntData.players);
       }
     } catch (err) {
@@ -105,6 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Leave Hunt beim Tab-/Fenster-Schließen
   // =========================
   async function leaveHunt() {
+
+    console.log("Wir rufen leavehunt aus datei hunt_create.js");
     if (!huntData.sessionId) return;
     try {
       await fetch(`${baseURL}/hunts/${huntData.sessionId}/leave`, {
@@ -116,9 +126,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  window.addEventListener("beforeunload", leaveHunt);
+  // window.addEventListener("beforeunload", leaveHunt);// Note wieso leaven
   // Optional: auch bei Back-Button
-  window.addEventListener("pagehide", leaveHunt);
+  // window.addEventListener("pagehide", leaveHunt); // Note wieso leaven
 
   // =========================
   // Initial Spieler rendern
