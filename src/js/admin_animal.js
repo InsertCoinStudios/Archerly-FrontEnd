@@ -1,9 +1,27 @@
+const context = urlParams.get("context"); // "existing" | "new"
+const parcourId = urlParams.get("parcourId");
+const animalIndex = parseInt(urlParams.get("animalIndex"), 10);
+let animalsFromBackend = [];
+
+if (context === "new") {
+  const emptyParcour = {
+    course: {
+      id: "Tier",             // empty string for ID
+      name: "",           // empty string for name
+      location: "",       // empty string for location
+      difficulty: "",     // empty string for difficulty
+      info: "",           // empty string for info
+      animals: []         // empty array for animals
+    }
+  };
+  // Check localStorage; if nothing exists, set it
+  if (!localStorage.getItem("draft_newParcour")) {
+    localStorage.setItem("draft_newParcour", JSON.stringify(emptyParcour));
+  }
+
+}
 document.addEventListener("DOMContentLoaded", async () => {
   // 🔹 URL-Parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const context = urlParams.get("context"); // "existing" | "new"
-  const parcourId = urlParams.get("parcourId");
-  const animalIndex = parseInt(urlParams.get("animalIndex"), 10);
   const baseURL = "http://localhost:5000";
 
   // 🔹 DOM-Elemente
@@ -19,7 +37,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 🔹 Variablen
   let selectedBox = null;
   let currentParcour = { animals: [] };
-  let animalsFromBackend = [];
 
   // 🔹 JWT Token
   const jwt = localStorage.getItem("jwt");
@@ -69,36 +86,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ===============================
   // 2️⃣ Parcour laden
   // ===============================
-if (context === "new") {
-  currentParcour = JSON.parse(
-    localStorage.getItem("draft_newParcour") || '{"animals":[]}'
-  );
-  loadAnimal();
-
-  if (currentParcour.animals.length <= 1 && deleteBtn) {
-    deleteBtn.style.display = "none";
-  }
-
-} else if (context === "existing") {
-  try {
-    const res = await fetch(`${baseURL}/courses/${parcourId}`, {
-      headers: {
-        "Authorization": `Bearer ${jwt}`
-      }
-    });
-
-    if (!res.ok) throw new Error("Fehler beim Laden des Parcours");
-
-    const data = await res.json();
-    currentParcour = data.course;
-
+  if (context === "new") {
+    currentParcour = JSON.parse(
+      localStorage.getItem("draft_newParcour") || '{"animals":[]}'
+    );
     loadAnimal();
 
-  } catch (err) {
-    console.error(err);
-    alert("Fehler beim Laden des Parcours");
+    if (currentParcour.animals.length <= 1 && deleteBtn) {
+      deleteBtn.style.display = "none";
+    }
+
+  } else if (context === "existing") {
+    try {
+      const res = await fetch(`${baseURL}/courses/${parcourId}`, {
+        headers: {
+          "Authorization": `Bearer ${jwt}`
+        }
+      });
+
+      if (!res.ok) throw new Error("Fehler beim Laden des Parcours");
+
+      const data = await res.json();
+      currentParcour = data.course;
+
+      loadAnimal();
+
+    } catch (err) {
+      console.error(err);
+      alert("Fehler beim Laden des Parcours");
+    }
   }
-}
 
 
   // ===============================

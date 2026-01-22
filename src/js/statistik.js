@@ -1,3 +1,4 @@
+const baseURL = "http://localhost:5000";
 document.addEventListener("DOMContentLoaded", async () => {
   // Token aus LocalStorage holen
   const jwt = localStorage.getItem("jwt");
@@ -9,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
     // 1. Daten vom Backend holen
-    const response = await fetch("http://localhost:3000/allTimeStats", {
+    const response = await fetch(`${baseURL}/allTimeStats`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -51,12 +52,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         {
           type: 'pie',
           radius: '60%',
-          label: { show: true, position: 'inside' },
+          label: { show: true, position: 'inside', formatter: '{c}' },
           labelLine: { show: false },
           data: [
-            { value: totalShots, name: 'Schüsse' },
-            { value: totalMisses, name: 'Verfehlte' },
-            { value: totalKills, name: 'Volltreffer' }
+            { value: totalShots, name: 'Gesamt', label: { show: totalShots > 0 } },
+            { value: totalKills, name: 'Volltreffer', label: { show: totalKills > 0 } },
+            { value: totalMisses, name: 'Verfehlt', label: { show: totalMisses > 0 } }
           ],
           emphasis: {
             itemStyle: { shadowBlur: 0, shadowOffsetX: 0, shadowColor: 'transparent' }
