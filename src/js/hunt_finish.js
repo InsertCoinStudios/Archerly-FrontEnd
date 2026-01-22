@@ -66,7 +66,9 @@ async function loadUserStats() {
         const hit = data.stats.hit ?? 0;
         const miss = data.stats.miss ?? 0;
 
-        const totalShots = kill + hit + miss;
+    //         const totalShots = kill + hit + miss;
+        const totalShots = hit;
+        console.log("kill: ", kill, "miss: ", miss, "hits: ", totalShots);
 
         // Alle Segmente drin lassen, nur Labels für 0-Werte ausblenden
         const chartData = [

@@ -53,16 +53,23 @@ $(document).ready(function () {
         contentType: "application/json",
         data: JSON.stringify(payload),
 
-        success: function (res) {
-          if (res.success) {
-            alert("✅ Registrierung erfolgreich!");
-            window.location.href = "login.html";
-          } else if (res.code === "EMAIL_EXISTS") {
-            showEmailError(res.message);
-          } else {
-            alert("Registrierung fehlgeschlagen");
-          }
-        },
+      success: function (res, textStatus, xhr) {
+        console.log("HTTP Status:", xhr.status);
+        console.log("Response Header:", xhr.getAllResponseHeaders());
+        console.log("Response Body:", res);
+
+        window.location.href("login.html");
+
+        /*if (res.success) {
+          alert("✅ Registrierung erfolgreich!");
+          window.location.href = "login.html";
+        } else if (res.code === "EMAIL_EXISTS") {
+          showEmailError(res.message);
+        } else {
+          alert("Registrierung fehlgeschlagen");
+        }*/ // Temporär raus da es irgendwie Probleme verursacht
+      },
+
 
         error: function () {
           alert("Serverfehler – bitte später erneut versuchen");

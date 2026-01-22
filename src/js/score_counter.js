@@ -2,14 +2,55 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const baseURL = "http://localhost:5000";
   const jwt = localStorage.getItem("jwt");
-  const raw = localStorage.getItem("currentHunt");
+  let raw = localStorage.getItem("currentHunt");
 
+  // ======= currentHunt prüfen / laden =======
+  async function loadCurrentHunt() {
+    const huntId = localStorage.getItem("joinedSessionId");
 
-if (!raw) {
-  console.error("currentHunt ist leer oder noch nicht gesetzt");
-  alert("Hunt-Daten fehlen – bitte neu starten");
-  return;
-}
+    if (!huntId || !jwt) {
+      console.error("Keine HuntId oder kein JWT vorhanden");
+      alert("Keine Hunt-Daten vorhanden – bitte neu starten");
+      return false;
+    }
+
+    try {
+      const res = await fetch(`${baseURL}/hunts/${huntId}/GetCourse`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwt}`
+        }
+      });
+
+      if (!res.ok) {
+        console.error("Fehler beim Laden von currentHunt:", res.status, res.statusText);
+        return false;
+      }
+
+      const data = await res.json();
+      if (!data) {
+        console.error("currentHunt ist leer oder ungültig");
+        alert("Hunt-Daten fehlen – bitte neu starten");
+        return false;
+      }
+
+      localStorage.setItem("currentHunt", JSON.stringify(data));
+      raw = localStorage.getItem("currentHunt"); // update raw für den Rest des Codes
+      console.log("currentHunt erfolgreich geladen:", data);
+      return true;
+
+    } catch (err) {
+      console.error("Fehler beim Laden von currentHunt:", err);
+      return false;
+    }
+  }
+
+  // Wenn noch kein currentHunt im LocalStorage
+  if (!raw) {
+    const ok = await loadCurrentHunt();
+    if (!ok) return; // Abbrechen, wenn kein currentHunt geladen werden konnte
+  }
 
   console.log("TYPE:", typeof raw);
   console.log("LENGTH:", raw?.length);
@@ -25,6 +66,9 @@ if (!raw) {
     alert("Keine Hunt-Daten vorhanden");
     return;
   }
+
+  // ====== Rest deines Skripts wie gehabt ======
+
 
   const parcourNameEl = document.getElementById("score_counter-parcour-name");
   const rankEl = document.getElementById("current-rank");

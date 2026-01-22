@@ -1,3 +1,6 @@
+
+const baseURL = "http://localhost:5000"; // Backend-URL
+
 document.addEventListener("DOMContentLoaded", async () => {
   const returnBtn = document.getElementById("returnBtn");
   const overlay = document.getElementById("leaveOverlay");
@@ -6,8 +9,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const sessionIdDisplay = document.getElementById("sessionIdDisplay");
   const usersQueue = document.getElementById("usersQueue");
   const participantCountEl = document.getElementById("participantCount");
-
-  const baseURL = "http://localhost:5000"; // Backend-URL
   const jwt = localStorage.getItem("jwt");
   const sessionId = localStorage.getItem("joinedSessionId");
   console.log("JWT:", jwt);
@@ -19,6 +20,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 // =========================
 // Funktion: Prüfen, ob Hunt aktiviert ist
 // =========================
+// window.location.href = "score_counter.html";
+
 async function checkHuntActivated() {
   try {
     const res = await fetch(`${baseURL}/hunts/${sessionId}/IsActivated`, {
@@ -48,8 +51,58 @@ async function checkHuntActivated() {
 // =========================
 // Polling starten
 // =========================
+
 async function waitForHuntActivation() {
-  const checkInterval = 2000; // alle 2 Sekunden prüfen
+  try {
+    const response = await fetch(`${baseURL}/hunts/${sessionId}/IsActivated`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${jwt}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error("Serverfehler:", response.status);
+      return;
+    }
+
+    const text = await response.text();
+    const activated = text.trim() === "true";
+
+    console.log("Query activated:", activated);
+
+    if (activated) {
+      const response = await fetch(`${baseURL}/hunts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${jwt}`
+        }
+      });
+
+      if (!response.ok) throw new Error("Fehler beim Erstellen der Jagd");
+
+      const data = await response.json();
+      // Response enthält:
+      // data.value.owner, data.value.players, data.value.sessionId
+
+      // Session-Daten im localStorage speichern für hunt_create.html
+      localStorage.setItem("currentHunt", JSON.stringify(data.value));
+      window.location.href = `score_counter.html?sessionId=${sessionId}`;
+      return;
+    }
+
+    // wenn false → einfach beenden
+    return;
+
+  } catch (err) {
+    console.error("Netzwerkfehler:", err);
+    return;
+  }
+}
+
+async function waitForHuntActivation2() {
   const loadingMsg = document.createElement("div");
   loadingMsg.id = "waitingMessage";
   loadingMsg.textContent = "Bitte warten, bis der Host die Jagd startet...";
@@ -72,12 +125,13 @@ async function waitForHuntActivation() {
 // =========================
 // Aufrufen beim Laden
 // =========================
+/*
 document.addEventListener("DOMContentLoaded", () => {
   if (jwt && sessionId) {
     waitForHuntActivation();
   }
 });
-
+*/
 
   // =========================
   // Funktion: Hunt verlassen
@@ -115,13 +169,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
   // Hunt verlassen bei Tab/Browser schließen
   // =========================
-  window.addEventListener("beforeunload", leaveHunt);
-  window.addEventListener("pagehide", leaveHunt);
+  // window.addEventListener("beforeunload", leaveHunt);
+  // window.addEventListener("pagehide", leaveHunt);
 
   // =========================
   // Spielerliste laden & anzeigen
   // =========================
   async function loadSession() {
+    waitForHuntActivation();
     try {
       console.log("Fetch URL:", `${baseURL}/hunts/${sessionId}`);
       const res = await fetch(`${baseURL}/hunts/${sessionId}`, {

@@ -103,6 +103,30 @@
       console.log("HTML lädt gleich JS...");
      </script>
 <script src="../js/hunt_finish.js" defer></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+  const homeBtn = document.querySelector(".footer-img-left");
 
+  if (!homeBtn) return;
+
+  homeBtn.addEventListener("click", () => {
+    // Werte zwischenspeichern
+    const jwt = localStorage.getItem("jwt");
+    const isAdmin = localStorage.getItem("isAdmin");
+    const userId = localStorage.getItem("userId");
+
+    // Alles löschen
+    localStorage.clear();
+
+    // Nur die wichtigen Keys wieder setzen
+    if (jwt) localStorage.setItem("jwt", jwt);
+    if (isAdmin) localStorage.setItem("isAdmin", isAdmin);
+    if (userId) localStorage.setItem("userId", userId);
+
+    console.log("localStorage bereinigt (jwt, isAdmin, userId behalten)");
+  });
+});
+
+</script>
   </body>
 </html>
